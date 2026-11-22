@@ -1,0 +1,30 @@
+<div class="stl-shell stl-review-shell">
+  <header class="stl-top stl-review-top">
+    <p class="stl-review-head"></p>
+    <p class="stl-rule">{{text.rule}}</p>
+    <p class="stl-review-hint">{{text.hint}}</p>
+    <p class="stl-langmsg" role="alert" hidden></p>
+  </header>
+  <div class="stl-main">
+    <aside class="stl-listpane">
+      <div class="stl-filters" role="group" aria-label="{{text.filters}}"></div>
+      <div class="stl-search">
+        <input type="search" name="query" placeholder="{{text.search}}" aria-label="{{text.search}}">
+      </div>
+      <ul class="stl-list" role="listbox" aria-label="{{text.keys}}"></ul>
+    </aside>
+    <section class="stl-detail" aria-live="polite">
+      <p class="stl-empty">{{text.pick}}</p>
+    </section>
+  </div>
+  <div class="stl-report" role="status" hidden></div>
+  <footer class="stl-foot">
+    <span class="stl-saved stl-review-progress"></span>
+    <label class="stl-use">
+      <span>{{text.reviewer}}</span>
+      <input type="text" name="reviewer" maxlength="60" aria-label="{{text.reviewer}}">
+    </label>
+    <button type="button" data-stl="copy"><i class="fa-solid fa-copy" inert></i> {{text.copy}}</button>
+    <button type="button" data-stl="save" class="stl-primary"><i class="fa-solid fa-file-export" inert></i> {{text.save}}</button>
+  </footer>
+</div>

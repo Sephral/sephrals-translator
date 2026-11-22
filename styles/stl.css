@@ -1,0 +1,1004 @@
+/* Sephral’s Translator */
+
+/* Colors: the warm signature look by default, the dark Foundry look per user */
+.stl-app {
+  --stl-paper: #fbf6ea;
+  --stl-paper-2: #f3ecde;
+  --stl-card: rgb(255 250 240 / 0.92);
+  --stl-ink: #1f1a17;
+  --stl-muted: #6f655d;
+  --stl-line: rgb(73 49 32 / 0.14);
+  --stl-soft: rgb(73 49 32 / 0.07);
+  --stl-field: #fffdf7;
+  --stl-accent: #9c3b22;
+  --stl-accent-soft: rgb(156 59 34 / 0.12);
+  --stl-on-accent: #fffaf0;
+  --stl-radius: 12px;
+  --stl-thumb: #3b332d;
+}
+
+.stl-app[data-stl-theme="foundry"] {
+  --stl-paper: #24211e;
+  --stl-paper-2: #1c1a18;
+  --stl-card: rgb(255 255 255 / 0.05);
+  --stl-ink: #ece5d8;
+  --stl-muted: #aba191;
+  --stl-line: rgb(255 255 255 / 0.12);
+  --stl-soft: rgb(255 255 255 / 0.06);
+  --stl-field: rgb(0 0 0 / 0.25);
+  --stl-accent: #d8784e;
+  --stl-accent-soft: rgb(216 120 78 / 0.18);
+  --stl-on-accent: #1c1a18;
+  --stl-radius: 6px;
+  --stl-thumb: #111;
+}
+
+.stl-app .window-content {
+  padding: 0;
+  background: linear-gradient(180deg, var(--stl-paper) 0%, var(--stl-paper-2) 100%);
+  color: var(--stl-ink);
+}
+
+
+/* .stl-app is set on every window of the module, with data-stl-theme="signature|foundry" */
+
+/* Status colors: text on a tinted ground, readable on paper and on dark */
+.stl-app {
+  --stl-ok: #1f6b3a;
+  --stl-open: #6f655d;
+  --stl-check: #1f4f8f;
+  --stl-changed: #7a3a8c;
+  --stl-warning: #8a5a00;
+  --stl-error: #a3201a;
+}
+
+.stl-app[data-stl-theme="foundry"] {
+  --stl-ok: #7fd49a;
+  --stl-open: #aba191;
+  --stl-check: #8fb8f0;
+  --stl-changed: #d6a2e6;
+  --stl-warning: #f0c060;
+  --stl-error: #ff8f87;
+}
+
+.stl-app [hidden] {
+  display: none !important;
+}
+
+/* The outline on the places of the page that show the selected text; it pulses when a text is picked or shown */
+.stl-hl {
+  outline: 3px solid #ff00aa !important;
+  outline-offset: 2px;
+}
+
+.stl-hl-pulse {
+  animation: stl-pulse 1s ease-in-out 3;
+}
+
+/* Picking a text on screen: a crosshair everywhere but in the translator, a dashed frame on the element under it */
+body.stl-picking,
+body.stl-picking *:not([data-stl-self], [data-stl-self] *) {
+  cursor: crosshair !important;
+}
+
+.stl-pick-hover {
+  outline: 2px dashed #ffd400 !important;
+  outline-offset: 1px;
+}
+
+@keyframes stl-pulse {
+  50% { outline-color: #ffd400; }
+}
+
+.stl-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  container-type: inline-size;
+  container-name: stl;
+  font-size: 13px;
+}
+
+.stl-app button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: auto;
+  height: 28px;
+  margin: 0;
+  padding: 0 10px;
+  border: 1px solid var(--stl-line);
+  border-radius: 999px;
+  background: var(--stl-field);
+  color: var(--stl-ink);
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.stl-app button:hover:not(:disabled) {
+  border-color: var(--stl-accent);
+  background: var(--stl-accent-soft);
+}
+
+.stl-app button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.stl-app button.stl-primary {
+  border-color: var(--stl-accent);
+  background: var(--stl-accent);
+  color: var(--stl-on-accent);
+  font-weight: 700;
+}
+
+.stl-app input[type="text"],
+.stl-app input[type="search"],
+.stl-app select,
+.stl-app textarea {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid var(--stl-line);
+  border-radius: 8px;
+  background: var(--stl-field);
+  color: var(--stl-ink);
+  font-size: 13px;
+}
+
+.stl-app input[type="text"],
+.stl-app input[type="search"],
+.stl-app select {
+  height: 30px;
+  padding: 0 8px;
+}
+
+.stl-app textarea {
+  padding: 6px 8px;
+  min-height: 70px;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.stl-app :focus-visible {
+  outline: 2px solid var(--stl-accent);
+  outline-offset: 1px;
+}
+
+/* Top row */
+.stl-top {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px 12px;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--stl-line);
+}
+
+.stl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  color: var(--stl-muted);
+  font-size: 11px;
+}
+
+.stl-field-module { flex: 1 1 200px; }
+.stl-field-lang { flex: 1 1 220px; }
+.stl-field-samples { flex: 0 1 220px; min-width: 150px; }
+
+/* a sample window opened unseen while the translator learns which texts it shows */
+.application.stl-learning,
+.app.stl-learning {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+.stl-field-samples select { width: 100%; }
+.stl-langpick { display: flex; gap: 6px; }
+.stl-langpick select { flex: 1 1 auto; min-width: 0; }
+.stl-langpick input { flex: 0 0 110px; }
+
+.stl-progress {
+  flex: 1 1 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  color: var(--stl-muted);
+  font-size: 12px;
+}
+
+.stl-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--stl-soft);
+  overflow: hidden;
+}
+
+.stl-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--stl-accent);
+  transition: width 0.2s;
+}
+
+.stl-langmsg {
+  flex: none;
+  margin: 0;
+  padding: 6px 12px;
+  background: var(--stl-accent-soft);
+  color: var(--stl-ink);
+}
+
+/* a module made for another system or one that needs a missing module: translatable, but nothing shows here */
+.stl-needs {
+  flex: none;
+  margin: 0;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--stl-line);
+  background: var(--stl-accent-soft);
+  color: var(--stl-ink);
+  font-weight: 600;
+}
+
+/* Two panes, stacked on narrow windows */
+.stl-main {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(200px, 38%) minmax(0, 1fr);
+}
+
+@container stl (max-width: 640px) {
+  .stl-main {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(110px, 38%) minmax(0, 1fr);
+  }
+}
+
+.stl-listpane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  border-right: 1px solid var(--stl-line);
+}
+
+@container stl (max-width: 640px) {
+  .stl-listpane {
+    border-right: 0;
+    border-bottom: 1px solid var(--stl-line);
+  }
+}
+
+.stl-filters {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 8px 4px;
+}
+
+.stl-app button.stl-chip {
+  height: 24px;
+  padding: 0 8px;
+  font-size: 11px;
+}
+
+.stl-app button.stl-chip[aria-pressed="true"] {
+  border-color: var(--stl-accent);
+  background: var(--stl-accent-soft);
+  font-weight: 700;
+}
+
+.stl-search {
+  flex: none;
+  display: flex;
+  gap: 6px;
+  padding: 4px 8px 6px;
+}
+
+.stl-search input { flex: 1 1 60%; }
+.stl-search .stl-pick { flex: none; width: auto; padding: 0 8px; }
+.stl-search .stl-pick[aria-pressed="true"] { background: var(--stl-accent); color: #fff; }
+.stl-search select { flex: 1 1 40%; min-width: 0; }
+
+.stl-list {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0 4px 8px;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.stl-list li[data-key] {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "pill key" "pill en";
+  column-gap: 8px;
+  align-items: center;
+  margin: 2px 0;
+  padding: 4px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 38px;
+}
+
+.stl-list li[data-key]:hover { background: var(--stl-soft); }
+.stl-list li[aria-selected="true"] { background: var(--stl-accent-soft); outline: 1px solid var(--stl-accent); }
+
+.stl-status-pill {
+  grid-area: pill;
+  min-width: 64px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--stl-soft);
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--stl-open);
+}
+
+li[data-status="ok"] .stl-status-pill { color: var(--stl-ok); }
+li[data-status="check"] .stl-status-pill { color: var(--stl-check); }
+li[data-status="changed"] .stl-status-pill { color: var(--stl-changed); }
+li[data-status="warning"] .stl-status-pill { color: var(--stl-warning); }
+li[data-status="error"] .stl-status-pill { color: var(--stl-error); }
+
+.stl-li-key {
+  grid-area: key;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  overflow: hidden;
+  word-break: break-all;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: var(--stl-muted);
+}
+
+.stl-li-en {
+  grid-area: en;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.stl-none {
+  padding: 12px;
+  color: var(--stl-muted);
+}
+
+/* Detail pane */
+.stl-detail {
+  min-height: 0;
+  min-width: 0;
+  padding: 10px 12px 14px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stl-empty {
+  margin: 20px 0;
+  color: var(--stl-muted);
+}
+
+.stl-keyhead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
+.stl-key {
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.stl-meta {
+  color: var(--stl-muted);
+  font-size: 11px;
+}
+
+.stl-label {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--stl-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.stl-text {
+  padding: 6px 8px;
+  border: 1px solid var(--stl-line);
+  border-radius: 8px;
+  background: var(--stl-card);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.stl-changed {
+  padding: 8px;
+  border: 1px solid var(--stl-changed);
+  border-radius: 8px;
+}
+
+.stl-two {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+  margin: 4px 0 8px;
+}
+
+.stl-yours {
+  margin-bottom: 0;
+}
+
+.stl-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.stl-holder {
+  font-family: var(--font-mono, monospace);
+}
+
+.stl-checkline,
+.stl-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--stl-muted);
+  font-size: 12px;
+}
+
+.stl-checkline input,
+.stl-check input {
+  flex: none;
+  margin: 2px 0 0;
+}
+
+.stl-checks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.stl-checks li {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--stl-soft);
+  overflow-wrap: anywhere;
+}
+
+.stl-check-error { border-left: 4px solid var(--stl-error); color: var(--stl-error); }
+.stl-check-warning { border-left: 4px solid var(--stl-warning); color: var(--stl-warning); }
+.stl-check-ok { border-left: 4px solid var(--stl-ok); color: var(--stl-ok); }
+.stl-check-info { color: var(--stl-muted); }
+.stl-detailtext { color: var(--stl-ink); font-weight: 400; }
+
+.stl-hints {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--stl-muted);
+  font-size: 12px;
+}
+
+.stl-hint-warn { color: var(--stl-warning); }
+
+.stl-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  border: 1px dashed var(--stl-line);
+  border-radius: 8px;
+}
+
+.stl-state {
+  align-self: flex-start;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--stl-soft);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.stl-state[data-state="live"],
+.stl-state[data-state="map"] { color: var(--stl-ok); }
+.stl-state[data-state="open"] { color: var(--stl-warning); }
+.stl-state[data-state="reload"] { color: var(--stl-check); }
+.stl-state-text { margin: 0; color: var(--stl-muted); }
+
+.stl-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Report and footer */
+.stl-report {
+  flex: none;
+  margin: 0;
+  padding: 6px 12px;
+  border-top: 1px solid var(--stl-line);
+  background: var(--stl-soft);
+  max-height: 96px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+.stl-report p,
+.stl-report ul {
+  margin: 0;
+}
+
+.stl-report ul {
+  padding-left: 18px;
+  overflow-wrap: anywhere;
+}
+
+/* The footer: where the translation is used on the left, the actions together on the right. The actions never break
+   apart, when the window gets narrow they move to their own line as a group. */
+.stl-foot {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--stl-line);
+}
+
+.stl-foot-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.stl-saved {
+  color: var(--stl-muted);
+  font-size: 11px;
+}
+
+/* Where the translation is used: only in the window, in this browser, for the world */
+.stl-use {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  font-size: 12px;
+}
+
+.stl-use select {
+  width: auto;
+  max-width: 240px;
+  min-width: 120px;
+  text-overflow: ellipsis;
+}
+
+/* The text of the last submission, when it differs from the field */
+.stl-sent .stl-text {
+  border-left: 3px solid var(--stl-accent);
+  padding-left: 6px;
+}
+
+/* Earlier submissions in the submit dialog */
+.stl-history {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 0 14px;
+  border-top: 1px solid var(--stl-line);
+}
+
+.stl-history h3 {
+  margin: 0;
+  font-size: 14px;
+  border: 0;
+  color: var(--stl-ink);
+}
+
+.stl-history-hint,
+.stl-history-meta { color: var(--stl-muted); font-size: 12px; }
+
+.stl-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stl-history-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid var(--stl-line);
+  border-radius: 8px;
+  background: var(--stl-soft);
+}
+
+.stl-history-list li[data-state="withdrawn"],
+.stl-history-list li[data-state="replaced"] { opacity: 0.7; }
+
+.stl-history-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.stl-history-state { font-size: 12px; color: var(--stl-muted); }
+.stl-history-list li[data-state="sent"] .stl-history-state { color: var(--stl-ok); font-weight: 700; }
+
+.stl-history-code {
+  overflow-wrap: anywhere;
+  user-select: all;
+  font-size: 12px;
+}
+
+/* Submit dialog */
+.stl-submit {
+  height: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 12px 14px 0;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+/* The buttons stay in view when the window is short */
+.stl-submit .stl-form > .stl-buttons {
+  position: sticky;
+  bottom: 0;
+  justify-content: flex-end;
+  padding: 8px 0 12px;
+  background: var(--stl-paper);
+}
+
+.stl-submit p { margin: 0; }
+
+/* The submit window fits its content up to the screen height, the content scrolls beyond that */
+.stl-submit-app { max-height: calc(100vh - 40px); }
+
+/* Direct links to Discord and GitHub, and the link after handing in: they open even where a new tab was blocked */
+.stl-links,
+.stl-open-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  font-size: 12px;
+}
+
+.stl-links span,
+.stl-open-hint { color: var(--stl-muted); }
+
+.stl-app a.stl-button-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--stl-line);
+  border-radius: 999px;
+  background: var(--stl-field);
+  color: var(--stl-ink);
+  font-size: 12px;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.stl-app a.stl-button-link:hover {
+  border-color: var(--stl-accent);
+  background: var(--stl-accent-soft);
+}
+
+/* The last fallback: where the key is used in the code of the module */
+.stl-app .stl-code {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  min-width: 0;
+  margin-top: 6px;
+}
+
+.stl-app .stl-code > *,
+.stl-app .stl-snippet pre { min-width: 0; max-width: 100%; }
+
+.stl-app .stl-code-hint { margin: 0; color: var(--stl-muted); font-size: 12px; }
+.stl-app .stl-snippet { margin: 0; }
+.stl-app .stl-snippet figcaption { font-family: var(--font-mono, monospace); font-size: 11px; color: var(--stl-muted); }
+
+.stl-app .stl-snippet pre {
+  margin: 2px 0 0;
+  padding: 6px 8px;
+  max-height: 180px;
+  overflow: auto;
+  border: 1px solid var(--stl-line);
+  border-radius: 6px;
+  background: var(--stl-field);
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre;
+}
+
+.stl-app .stl-code-line { display: block; }
+.stl-app .stl-code-hit { background: var(--stl-accent-soft); font-weight: 700; }
+
+/* An example chat message of the translator, only in this browser */
+.stl-example { outline: 2px dashed var(--stl-accent, #9c3b22); outline-offset: -2px; }
+
+/* Credits: a name or anonymous, the translator chooses */
+.stl-credit {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--stl-line);
+  border-radius: 8px;
+}
+
+.stl-credit legend {
+  padding: 0 4px;
+  font-weight: 700;
+}
+
+.stl-credit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stl-credit-row input[type="radio"] { flex: none; margin: 0; }
+.stl-credit-row span { flex: none; }
+.stl-credit-row input[type="text"] { flex: 1 1 auto; min-width: 0; }
+
+.stl-missing {
+  color: var(--stl-muted);
+  font-size: 12px;
+}
+.stl-intro { color: var(--stl-muted); }
+
+/* The one rule: translated by hand, no machine translation, no AI */
+.stl-rule {
+  padding: 6px 10px;
+  border-left: 3px solid var(--stl-accent);
+  background: var(--stl-accent-soft);
+  font-weight: 700;
+}
+
+.stl-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stl-problems {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--stl-error);
+}
+
+.stl-fielderror { color: var(--stl-error); }
+.stl-privacy { color: var(--stl-muted); font-size: 12px; }
+.stl-hint-line { color: var(--stl-warning); }
+
+/* After the click: the steps on Discord or GitHub and the text to paste */
+.stl-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 12px;
+}
+
+.stl-steps-head { font-weight: 700; }
+
+.stl-steps-list {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-wrap: anywhere;
+}
+
+.stl-steps textarea[name="message"] {
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  resize: vertical;
+}
+
+/* Checkboxes: drawn here, the icon Foundry 14 puts into ::before would show through */
+.stl-app input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-content: center;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 2px solid var(--stl-muted);
+  border-radius: 4px;
+  background: var(--stl-field);
+  cursor: pointer;
+}
+
+.stl-app input[type="checkbox"]::before {
+  content: none;
+  display: none;
+}
+
+.stl-app input[type="checkbox"]::after {
+  content: "";
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid var(--stl-on-accent);
+  border-bottom: 2px solid var(--stl-on-accent);
+  transform: rotate(-45deg) translate(1px, -1px);
+  opacity: 0;
+}
+
+.stl-app input[type="checkbox"]:checked {
+  background: var(--stl-accent);
+  border-color: var(--stl-accent);
+}
+
+.stl-app input[type="checkbox"]:checked::after {
+  opacity: 1;
+}
+
+/* Radio buttons: drawn here too, an empty one looks empty */
+.stl-app input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-content: center;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 2px solid var(--stl-muted);
+  border-radius: 50%;
+  background: var(--stl-field);
+  cursor: pointer;
+}
+
+.stl-app input[type="radio"]::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--stl-accent);
+  opacity: 0;
+}
+
+.stl-app input[type="radio"]::after {
+  content: none;
+  display: none;
+}
+
+.stl-app input[type="radio"]:checked {
+  border-color: var(--stl-accent);
+}
+
+.stl-app input[type="radio"]:checked::before {
+  opacity: 1;
+}
+
+/* Review window: the head with the rule, verdict buttons, the submitted text */
+.stl-review-top {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.stl-review-top p { margin: 0; }
+.stl-review-head { font-weight: 700; }
+.stl-review-hint { color: var(--stl-muted); font-size: 12px; }
+
+.stl-verdicts button[aria-pressed="true"] {
+  background: var(--stl-accent);
+  border-color: var(--stl-accent);
+  color: var(--stl-on-accent);
+}
+
+.stl-verdicts button[data-verdict="ok"][aria-pressed="true"] {
+  background: var(--stl-ok);
+  border-color: var(--stl-ok);
+}
+
+.stl-submitted .stl-text {
+  border-left: 3px solid var(--stl-accent);
+  padding-left: 6px;
+  font-weight: 600;
+}
+
+.stl-review .stl-report textarea { width: 100%; margin-top: 6px; font-size: 12px; }
+
+/* Translator: notes of a reviewer next to a text, a dot in the list */
+.stl-note {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid var(--stl-line);
+  border-left: 3px solid var(--stl-warning);
+  border-radius: 8px;
+  background: var(--stl-soft);
+}
+
+.stl-note[data-verdict="ok"] { border-left-color: var(--stl-ok); }
+.stl-note p { margin: 0; }
+.stl-note-comment { color: var(--stl-muted); }
+
+.stl-list li[data-note] .stl-li-key::after {
+  content: " ●";
+  color: var(--stl-warning);
+}
+
+.stl-list li[data-note="ok"] .stl-li-key::after { color: var(--stl-ok); }
+
+/* Earlier translations of the same English text, and filling the other texts with the same English */
+.stl-app .stl-memory {
+  display: grid;
+  gap: 4px;
+  padding: 6px 8px;
+  border: 1px solid var(--stl-line);
+  border-radius: 8px;
+  background: var(--stl-soft);
+}
+
+.stl-app .stl-memory-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stl-app .stl-memory-text { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.stl-app .stl-memory-item .stl-meta { flex: none; max-width: 40%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stl-app .stl-memory button { flex: none; width: auto; padding: 0 8px; }
+
+/* The way to the next text that still wants work */
+.stl-app .stl-next {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stl-app .stl-next button { width: auto; padding: 0 10px; }
+.stl-app .stl-kbd { color: var(--stl-muted); font-size: 0.85em; }
+
+/* The short guide while no text is picked */
+.stl-app .stl-guide ol { margin: 6px 0 0; padding-left: 1.4em; display: grid; gap: 4px; }

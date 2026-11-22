@@ -1,0 +1,1531 @@
+/**
+ * The window "Sephral's Modules": every Sephral module in the world with its version, self test, settings, manual and
+ * demo video, the debug file, and on request the other Sephral modules that fit the world, each with a way to install it.
+ *
+ * Every module carries an identical copy as scripts/hub.mjs next to scripts/debug-file.mjs. Never change one copy
+ * alone: all copies stay the same. The copies share one registry on globalThis. The copy with the highest
+ * HUB_LIB_VERSION draws the window, the copy with the newest CATALOG_REVISION lists the modules, so a module released
+ * with an older copy keeps working and the list still shows modules that came out later. On a tie the copy loaded first
+ * wins, whatever its age: once a copy is released, every change of the window raises HUB_LIB_VERSION and every change
+ * of CATALOG or INTEGRATIONS raises CATALOG_REVISION. Modules without a copy (older releases) still appear, their self
+ * test runs through api.runSelfTest. The debug file button uses scripts/debug-file.mjs beside this file.
+ *
+ * Since version 4 the window counts how it is used through scripts/usage.mjs beside this file (library 6 or newer,
+ * countHub): opened, the other modules unfolded, a video or install link of a module not installed, a module installed
+ * or switched on. Only actions, never which module, and only where the GM agreed to the usage statistics.
+ */
+
+export const HUB_LIB_VERSION = 5;
+export const CATALOG_REVISION = 2026112202;
+
+const REGISTRY_KEY = "sephralsHub";
+const WINDOW_ID = "sephrals-hub";
+const STYLE_ID = "sephrals-hub-styles";
+const PREFIX = "sephrals-";
+/** Installed in the author's own test worlds only, it has nothing to show. */
+const HIDDEN = ["sephrals-usage-optout"];
+const GITHUB = "https://github.com/Sephral";
+const DISCORD = "https://discord.gg/7BjCgDYaBP";
+/** The README demo videos, played from GitHub only when the GM starts one. */
+const VIDEO_BASE = "https://raw.githubusercontent.com/Sephral";
+const VIDEO_WINDOW_ID = "sephrals-hub-video";
+/**
+ * Installing: Foundry installs packages only on its setup screen, where no module runs, and refuses every package
+ * action while a world is active. The window copies the manifest URL and shows the steps, the clip comes from the
+ * profile repository only when the GM starts it.
+ */
+const INSTALL_WINDOW_ID = "sephrals-hub-install";
+const INSTALL_VIDEO = `${VIDEO_BASE}/Sephral/main/media/install.mp4`;
+const FORGE_BAZAAR = "https://forge-vtt.com/bazaar";
+/** The module a GM set out to install, kept in this browser until the window showed it installed. */
+const PENDING_KEY = "sephrals-hub.pendingInstall";
+const PENDING_DAYS = 7;
+const PROBLEM_LIMIT = 5;
+
+/* -------------------------------------------- */
+/*  Catalog                                     */
+/* -------------------------------------------- */
+
+/**
+ * The released modules. systems: only for these game systems. needs: a module that must be active. supports: game
+ * systems with built in support. listed: has a package page on foundryvtt.com, otherwise the link goes to GitHub.
+ * video: false keeps the README demo video (media/demo.mp4 on GitHub) out of the window, for videos with AI made images
+ * (Foundry's AI content policy) or content we may not show inside a package. released: false has a repository but no
+ * release yet: its row gets manual and video, More from Sephral leaves it out. core: the lowest Foundry generation.
+ * supports lists only systems with real built in support (an adapter, a preset or a rule of its own), every module
+ * still works elsewhere. langs: the languages of its lang files, DEFAULT_LANGS when left out.
+ */
+export const DEFAULT_LANGS = ["en", "de"];
+const SWIFT_DICE_SYSTEMS = ["dnd5e", "pf2e", "swade", "crucible", "daggerheart", "CoC7", "deltagreen", "wfrp4e", "dark-heresy",
+  "impmal", "brp", "mythras", "rqg", "dragonbane", "symbaroum", "cairn", "cyberpunk-red-core", "blades-in-the-dark", "alienrpg",
+  "forbidden-lands", "vaesen", "t2k4e", "blade-runner", "fate-core-official", "ModularFate", "fate", "pbta", "dungeonworld",
+  "cyphersystem", "gurps", "draw-steel", "shadowrun5e", "shadowrun6-eden"];
+// Only what is released: Daggerheart and Tormenta20 of Roll Breakdown and Roll Requests and Pathfinder 2e of Campaign
+// Album are built but not released yet, add them with a new CATALOG_REVISION in the release that ships them.
+const ROLL_SYSTEMS = ["crucible", "dnd5e", "pf2e", "sf2e", "swade"];
+const TOOLTIP_SYSTEMS = ["dnd5e", "pf2e", "swade", "crucible", "daggerheart", "CoC7", "shadowdark", "projectfu", "shadowrun6-eden",
+  "dolmenwood", "rqg"];
+const CATALOG = [
+  { id: "sephrals-campaign-album", title: "Campaign Album", listed: true, supports: ["crucible", "dnd5e"],
+    text: { en: "Crits, fallen bosses and level ups, photographed on their own.",
+      de: "Kritische Treffer, gefallene Bosse und Stufenaufstiege, ganz von selbst fotografiert." } },
+  { id: "sephrals-combat-log-stats", title: "Combat Log & Stats", listed: true, supports: ["crucible", "dnd5e", "pf2e"],
+    text: { en: "Every fight recorded round by round, with stats and recaps for the table.",
+      de: "Jeder Kampf Runde für Runde aufgezeichnet, mit Statistik und Rückblick für die Runde." } },
+  { id: "sephrals-content-backup-restore", title: "Content Backup & Restore", listed: true,
+    text: { en: "Back up scenes, actors and journals and bring them back with one click.",
+      de: "Sichere Szenen, Akteure und Journale und hol sie mit einem Klick zurück." } },
+  { id: "sephrals-crucible-combat-pulse", title: "Crucible Combat Pulse", listed: true, systems: ["crucible"],
+    text: { en: "Shows the hidden pulse of a Crucible fight in the combat tracker.",
+      de: "Zeigt im Kampftracker, was in einem Crucible-Kampf sonst verborgen bleibt." } },
+  { id: "sephrals-crucible-sheet-quickbar", title: "Crucible Sheet & Quickbar", listed: true, systems: ["crucible"],
+    text: { en: "A compact hero and adversary sheet with a combat quickbar.",
+      de: "Ein kompakter Bogen für Helden und Gegner mit Kampfleiste." } },
+  { id: "sephrals-handout-lens", title: "Handout Lens", listed: true,
+    text: { en: "Zoom, pan and a reading lens for every picture you show your players.",
+      de: "Zoomen, verschieben und eine Leselupe für jedes Bild, das du deinen Spielern zeigst." } },
+  { id: "sephrals-deep-tables", title: "Deep Tables", listed: false, supports: ["crucible", "dnd5e", "swade"],
+    text: { en: "Roll tables with a look first, ready tables in the box, rows that fit the moment and results that act.",
+      de: "Würfeltabellen mit Vorschau, fertigen Tabellen zum Start, Zeilen passend zur Lage und Ergebnissen, die handeln." } },
+  { id: "sephrals-file-commander", title: "File Commander", listed: true,
+    text: { en: "A file manager with two panels for Foundry's storage.",
+      de: "Ein Dateimanager mit zwei Fenstern für Foundrys Speicher." } },
+  { id: "sephrals-first-table", title: "First Table", listed: false,
+    text: { en: "A short guided first session for new players, step by step, while you prepare the game.",
+      de: "Eine kurze Führung durch die erste Sitzung für neue Spieler, Schritt für Schritt, während du das Spiel vorbereitest." } },
+  { id: "sephrals-image-paste-drop", title: "Image Paste & Drop", listed: true,
+    text: { en: "Paste or drop an image and turn it into a scene, tile or journal page.",
+      de: "Füg ein Bild ein oder zieh es herein und mach daraus eine Szene, ein Tile oder eine Journalseite." } },
+  { id: "sephrals-instant-replay", title: "Instant Replay", listed: false,
+    text: { en: "The last seconds of the battle map as a short clip in the chat, also in slow motion.",
+      de: "Die letzten Sekunden der Karte als kurzer Clip im Chat, auf Wunsch in Zeitlupe." } },
+  { id: "sephrals-loot-ledger", title: "Loot Ledger", listed: true, supports: ["crucible", "dnd5e", "pf2e"],
+    text: { en: "A shared party inventory with a fair loot table and an open log.",
+      de: "Ein gemeinsames Gruppeninventar mit fairer Beuteverteilung und offenem Protokoll." } },
+  { id: "sephrals-lunar-almanac", title: "Lunar Almanac", listed: true, needs: "ember",
+    text: { en: "Ember's moons and inner realms with their phases at a glance.",
+      de: "Embers Monde und innere Reiche mit ihren Phasen auf einen Blick." } },
+  { id: "sephrals-map-pins", title: "Map Pins", listed: false,
+    text: { en: "Readable map pins, places your players discover, areas, routes and where the party is right now.",
+      de: "Lesbare Kartenpins, Orte, die deine Spieler entdecken, Gebiete, Routen und wo die Gruppe gerade ist." } },
+  { id: "sephrals-map-knowledge", title: "Map Knowledge", listed: true, core: 14,
+    text: { en: "Reveal parts of the map to your players, right in Foundry's own fog of war.",
+      de: "Deck Teile der Karte für deine Spieler auf, direkt in Foundrys eigenem Nebel des Krieges." } },
+  { id: "sephrals-module-loadouts", title: "Module Loadouts", listed: true,
+    text: { en: "Save your active modules as loadouts and switch with one click.",
+      de: "Speichere deine aktiven Module als Loadouts und wechsle mit einem Klick." } },
+  { id: "sephrals-performance-doctor", title: "Performance Doctor", listed: false,
+    text: { en: "Finds out why Foundry runs slowly and helps fix it.",
+      de: "Findet heraus, warum Foundry langsam läuft, und hilft beim Beheben." } },
+  { id: "sephrals-player-notes", title: "Player Notes", listed: true,
+    text: { en: "Private GM notes on every player character.",
+      de: "Private Notizen der SL zu jedem Spielercharakter." } },
+  { id: "sephrals-roll-breakdown", title: "Roll Breakdown", listed: true, supports: ROLL_SYSTEMS,
+    text: { en: "Shows where every number of a roll comes from, right on the chat card.",
+      de: "Zeigt direkt auf der Chatkarte, woher jede Zahl eines Wurfs kommt." } },
+  { id: "sephrals-roll-requests", title: "Roll Requests", listed: true, supports: ROLL_SYSTEMS,
+    text: { en: "Ask any group for a check or save and get one live result card.",
+      de: "Fordere Proben oder Rettungswürfe an und bekomm eine einzige Ergebniskarte." } },
+  { id: "sephrals-roll-triggers", title: "Roll Triggers", listed: true, supports: ["dnd5e", "pf2e", "swade", "crucible"],
+    text: { en: "Natural 20s, fumbles and doubles set off your house rules.",
+      de: "Natürliche 20, Patzer und Paschs lösen eure Hausregeln aus." } },
+  { id: "sephrals-saved-encounters", title: "Saved Encounters", listed: true,
+    text: { en: "Save monsters as an encounter and place the whole group again with one click.",
+      de: "Speichere Monster als Begegnung und stell die ganze Gruppe mit einem Klick wieder auf." } },
+  { id: "sephrals-session-chronicle", title: "Session Chronicle", listed: false,
+    text: { en: "A recap of every game night, written for you: a page per session and a Previously card at the next start.",
+      de: "Ein Rückblick auf jeden Spielabend, für dich geschrieben: eine Seite pro Sitzung und eine Karte „Was bisher geschah“ zum nächsten Start." } },
+  { id: "sephrals-swift-dice", title: "Swift Dice", listed: true, supports: SWIFT_DICE_SYSTEMS,
+    text: { en: "Light 3D dice for every roll, the same throw on every screen.",
+      de: "Leichte 3D-Würfel für jeden Wurf, auf jedem Bildschirm derselbe Wurf." } },
+  { id: "sephrals-table-compass", title: "Table Compass", listed: true,
+    text: { en: "Anonymous feedback from your players on pace and tension.",
+      de: "Anonyme Rückmeldung deiner Spieler zu Tempo und Spannung." } },
+  { id: "sephrals-tavern-games", title: "Tavern Games", listed: true, langs: ["en", "de", "ru"],
+    text: { en: "Dice, card and board games for the tavern table.",
+      de: "Würfel, Karten und Brettspiele für den Tavernentisch." } },
+  { id: "sephrals-token-tooltips", title: "Token Tooltips", listed: true, supports: TOOLTIP_SYSTEMS,
+    text: { en: "Health, armor and conditions when you hover over a token.",
+      de: "Leben, Rüstung und Zustände, sobald du über ein Token fährst." } },
+  { id: "sephrals-token-wardrobe", title: "Token Wardrobe", listed: false, supports: ["dnd5e", "pf2e", "swade", "crucible"],
+    text: { en: "Outfits for every character, a conversation stage with backdrops and crowds where nobody looks the same.",
+      de: "Outfits für jede Figur, eine Gesprächsbühne mit Kulissen und Gruppen, in denen keiner gleich aussieht." } },
+  { id: "sephrals-translator", title: "Translator", listed: false,
+    text: { en: "Translate a module into your language and see every word at once in its real windows.",
+      de: "Übersetze ein Modul in deine Sprache und sieh jedes Wort sofort in seinen echten Fenstern." } },
+  { id: "sephrals-update-guard", title: "Update Guard", listed: false,
+    text: { en: "Is your world ready for tonight? Errors of your players, modules in each other's way and the way back.",
+      de: "Ist deine Welt bereit für heute Abend? Fehler deiner Spieler, Module, die sich in die Quere kommen, und der Weg zurück." } },
+  { id: "sephrals-vista-portrait-switcher", title: "Vista Portrait Switcher", listed: true, needs: "ember",
+    text: { en: "Switch the portraits NPCs show in Ember's Vista scenes.",
+      de: "Wechsle die Porträts, die NSC in Embers Vista-Szenen zeigen." } }
+];
+
+/** Modules that use each other: module gains something in a world where with is active. */
+const INTEGRATIONS = [
+  { module: "sephrals-session-chronicle", with: "sephrals-combat-log-stats",
+    text: { en: "Writes the fights from Combat Log & Stats into the recap of every game night.",
+      de: "Schreibt die Kämpfe aus Combat Log & Stats in den Rückblick auf jeden Spielabend." } },
+  { module: "sephrals-session-chronicle", with: "sephrals-campaign-album",
+    text: { en: "Puts the photos from Campaign Album on the page of every game night.",
+      de: "Legt die Fotos aus dem Campaign Album auf die Seite jedes Spielabends." } },
+  { module: "sephrals-session-chronicle", with: "sephrals-loot-ledger",
+    text: { en: "Lists the loot from Loot Ledger in the recap of every game night.",
+      de: "Listet die Beute aus dem Loot Ledger im Rückblick auf jeden Spielabend." } },
+  { module: "sephrals-combat-log-stats", with: "sephrals-session-chronicle",
+    text: { en: "Adds the numbers of the night’s fights to the Session Chronicle page: damage, healing and the hero of the night.",
+      de: "Ergänzt die Seite von Session Chronicle um die Zahlen der Kämpfe: Schaden, Heilung und den Helden des Abends." } },
+  { module: "sephrals-campaign-album", with: "sephrals-session-chronicle",
+    text: { en: "Puts the photos taken during the night on the Session Chronicle page.",
+      de: "Legt die Fotos des Abends auf die Seite von Session Chronicle." } },
+  { module: "sephrals-loot-ledger", with: "sephrals-session-chronicle",
+    text: { en: "Lists the loot the party found during the night on the Session Chronicle page.",
+      de: "Listet die Beute, die die Gruppe an diesem Abend gefunden hat, auf der Seite von Session Chronicle." } },
+  { module: "sephrals-loot-ledger", with: "sephrals-deep-tables",
+    text: { en: "Deep Tables sends what a table rolled straight into Loot Ledger, where your players claim it.",
+      de: "Deep Tables schickt, was eine Tabelle gewürfelt hat, direkt in den Loot Ledger, dort beanspruchen es deine Spieler." } },
+  { module: "sephrals-deep-tables", with: "sephrals-loot-ledger",
+    text: { en: "Adds what a table rolled to Loot Ledger with one click.",
+      de: "Legt mit einem Klick in den Loot Ledger, was eine Tabelle gewürfelt hat." } },
+  { module: "sephrals-saved-encounters", with: "sephrals-deep-tables",
+    text: { en: "A Deep Tables result places one of your saved encounters on the map, as many groups as the table rolled.",
+      de: "Ein Ergebnis in Deep Tables stellt eine deiner gespeicherten Begegnungen auf die Karte, so viele Gruppen, wie die Tabelle gewürfelt hat." } },
+  { module: "sephrals-deep-tables", with: "sephrals-saved-encounters",
+    text: { en: "A table result places a saved encounter on the map with one click, and you can undo it.",
+      de: "Ein Tabellenergebnis stellt mit einem Klick eine gespeicherte Begegnung auf die Karte, und du kannst es rückgängig machen." } },
+  { module: "sephrals-roll-triggers", with: "sephrals-deep-tables",
+    text: { en: "When a trigger rolls a table, Deep Tables rolls it with tables inside tables and one clear card.",
+      de: "Würfelt ein Auslöser auf eine Tabelle, übernimmt Deep Tables mit Tabellen in Tabellen und einer klaren Karte." } },
+  { module: "sephrals-deep-tables", with: "sephrals-roll-triggers",
+    text: { en: "A natural 20 or any other trigger rolls your table with the full Deep Tables card.",
+      de: "Eine natürliche 20 oder ein anderer Auslöser würfelt deine Tabelle mit der vollen Karte von Deep Tables." } },
+  { module: "sephrals-loot-ledger", with: "sephrals-saved-encounters",
+    text: { en: "Saved Encounters rolls its loot tables into Loot Ledger, where your players claim the items.",
+      de: "Saved Encounters würfelt seine Beutetabellen in den Loot Ledger, dort beanspruchen deine Spieler die Gegenstände." } },
+  { module: "sephrals-saved-encounters", with: "sephrals-loot-ledger",
+    text: { en: "Place a saved group with one click and roll its loot straight into Loot Ledger.",
+      de: "Stell eine gespeicherte Gruppe mit einem Klick auf und würfle ihre Beute direkt in den Loot Ledger." } },
+  { module: "sephrals-module-loadouts", with: "sephrals-performance-doctor",
+    text: { en: "Performance Doctor tests the world without slow modules and Loadouts brings them back with one click.",
+      de: "Performance Doctor testet die Welt ohne langsame Module, Loadouts holt sie mit einem Klick zurück." } },
+  { module: "sephrals-performance-doctor", with: "sephrals-module-loadouts",
+    text: { en: "Finds the modules that slow Foundry down and tests the world without them through your loadouts.",
+      de: "Findet die Module, die Foundry bremsen, und testet die Welt über deine Loadouts ohne sie." } },
+  { module: "sephrals-combat-log-stats", with: "sephrals-campaign-album",
+    text: { en: "Adds the combat totals of each game night to its album page.",
+      de: "Ergänzt jede Albumseite um die Kampfbilanz des Spielabends." } },
+  { module: "sephrals-campaign-album", with: "sephrals-combat-log-stats",
+    text: { en: "Turns your game nights into an album, with the night's combat totals on every page.",
+      de: "Macht aus euren Spielabenden ein Album, mit der Kampfbilanz des Abends auf jeder Seite." } },
+  { module: "sephrals-handout-lens", with: "sephrals-image-paste-drop",
+    text: { en: "Pictures you show to the players open in a lens: they zoom and pan, and you close it for everyone.",
+      de: "Bilder, die du den Spielern zeigst, öffnen sich in einer Lupe: Sie zoomen und schieben, du schließt sie für alle." } },
+  { module: "sephrals-image-paste-drop", with: "sephrals-handout-lens",
+    text: { en: "Paste or drop a picture and show it to everyone with one click, Handout Lens opens it for reading.",
+      de: "Bild einfügen oder hineinziehen und mit einem Klick allen zeigen, Handout Lens öffnet es zum Lesen." } }
+];
+
+/* -------------------------------------------- */
+/*  Texts                                       */
+/* -------------------------------------------- */
+
+const TEXTS = {
+  en: {
+    title: "Sephral’s Modules",
+    menuName: "Sephral’s Modules",
+    menuLabel: "Open",
+    menuHint: "Self tests, settings and manuals of all Sephral modules in this world, and other modules that fit it.",
+    heading: "Your modules in this world",
+    summary: "{installed} installed, {active} active",
+    runAll: "Run all self tests",
+    debugFile: "Save debug file",
+    inWorld: "In this world",
+    inWorldHint: "Settings, manual, demo video and self test for each module",
+    active: "Active",
+    off: "Off",
+    testOk: "Self test passed",
+    testOkChecks: "Self test passed, {checks} checks",
+    testProblem: "Self test found 1 problem",
+    testProblems: "Self test found {count} problems",
+    testRunning: "Self test running",
+    testNone: "Self test not run yet",
+    testError: "The self test could not run: {error}",
+    testMissing: "This version has no self test",
+    moreProblems: "and {count} more",
+    offNote: "Installed, not active in this world",
+    offMissing: "Installed, not active. It needs {missing}, which is not installed.",
+    newer: "Newer than tested: {list}. Run the self tests of these modules once.",
+    selfTest: "Run the self test",
+    settings: "Settings",
+    manual: "Manual",
+    video: "Demo video",
+    watchVideo: "Watch the video",
+    videoTitle: "{title}: demo video",
+    videoSource: "The video plays from the module page on GitHub.",
+    videoError: "The video could not be loaded.",
+    enable: "Enable",
+    enableTitle: "Enable {title}",
+    enableText: "Enable {title} in this world? Foundry then reloads the world for everyone.",
+    enableMissing: "{title} needs {missing}, which is not installed.",
+    more: "More from Sephral",
+    moreHint: "Only the GM sees this list.",
+    moreCount: "{count} more modules fit this world.",
+    moreOne: "1 more module fits this world.",
+    moreNone: "You already have every module that fits this world.",
+    show: "Show",
+    hide: "Hide",
+    worksWith: "Works with your modules",
+    fits: "fits {title}",
+    madeFor: "Made for this world",
+    builtIn: "Built in support for {system}",
+    sysBadge: "Built in for {system}",
+    offFor: "Installed but off, fits {system}",
+    langSome: "Sephral’s modules with {language} texts: {list}. The others show English.",
+    langNone: "Sephral’s modules show English in {language} so far.",
+    everySystem: "For every system",
+    hidden: "{count} modules for other systems or settings are hidden.",
+    hiddenOne: "1 module for another system or setting is hidden.",
+    packagePage: "Package page",
+    github: "On GitHub",
+    install: "Install",
+    installTitle: "Install {title}",
+    installUnlisted: "{title} is not in Foundry's module search. Install it with its link instead.",
+    installListed: "Search for {title} in Foundry's Install Module window, or install it with its link.",
+    copyLink: "Copy link",
+    linkCopied: "Link copied. Paste it into Manifest URL on the setup screen.",
+    stepCopy: "Copy the link.",
+    stepSetup: "Go back to Setup, open Add-on Modules and click Install Module.",
+    stepPaste: "Paste the link into Manifest URL at the bottom of the window and click Install.",
+    stepEnable: "Launch this world again. This window then offers Enable for {title}.",
+    forgeBazaar: "Open the Bazaar on The Forge and click Install From Manifest under Toolbox.",
+    forgePaste: "Paste the link and click Install Module.",
+    forgeOpen: "Open the Bazaar",
+    showHow: "Show me how",
+    howNote: "The clip plays from GitHub.",
+    returnSetup: "Return to Setup",
+    setupNote: "Players in the world are disconnected. Foundry may ask for the administrator password.",
+    installedBanner: "{title} is installed now. Click Enable to switch it on in this world.",
+    allModules: "All modules on GitHub",
+    discord: "Discord",
+    gmOnly: "Only a GM can open Sephral’s Modules.",
+    hintClick: "Click to see it in Sephral’s Modules."
+  },
+  de: {
+    title: "Sephral’s Module",
+    menuName: "Sephral’s Module",
+    menuLabel: "Öffnen",
+    menuHint: "Selbsttests, Einstellungen und Handbücher aller Module von Sephral in dieser Welt, dazu weitere Module, die zu ihr passen.",
+    heading: "Deine Module in dieser Welt",
+    summary: "{installed} installiert, {active} aktiv",
+    runAll: "Alle Selbsttests starten",
+    debugFile: "Debug-Datei speichern",
+    inWorld: "In dieser Welt",
+    inWorldHint: "Einstellungen, Handbuch, Demo-Video und Selbsttest für jedes Modul",
+    active: "Aktiv",
+    off: "Aus",
+    testOk: "Selbsttest bestanden",
+    testOkChecks: "Selbsttest bestanden, {checks} Prüfungen",
+    testProblem: "Selbsttest fand 1 Problem",
+    testProblems: "Selbsttest fand {count} Probleme",
+    testRunning: "Selbsttest läuft",
+    testNone: "Selbsttest noch nicht gestartet",
+    testError: "Der Selbsttest konnte nicht laufen: {error}",
+    testMissing: "Diese Version hat keinen Selbsttest",
+    moreProblems: "und {count} weitere",
+    offNote: "Installiert, in dieser Welt nicht aktiv",
+    offMissing: "Installiert, nicht aktiv. Es braucht {missing}, das ist nicht installiert.",
+    newer: "Neuer als getestet: {list}. Starte die Selbsttests dieser Module einmal.",
+    selfTest: "Selbsttest starten",
+    settings: "Einstellungen",
+    manual: "Handbuch",
+    video: "Demo-Video",
+    watchVideo: "Video ansehen",
+    videoTitle: "{title}: Demo-Video",
+    videoSource: "Das Video läuft von der Seite des Moduls auf GitHub.",
+    videoError: "Das Video konnte nicht geladen werden.",
+    enable: "Aktivieren",
+    enableTitle: "{title} aktivieren",
+    enableText: "{title} in dieser Welt aktivieren? Foundry lädt die Welt danach für alle neu.",
+    enableMissing: "{title} braucht {missing}, das ist nicht installiert.",
+    more: "Mehr von Sephral",
+    moreHint: "Nur die SL sieht diese Liste.",
+    moreCount: "{count} weitere Module passen zu dieser Welt.",
+    moreOne: "1 weiteres Modul passt zu dieser Welt.",
+    moreNone: "Du hast schon alle Module, die zu dieser Welt passen.",
+    show: "Zeigen",
+    hide: "Ausblenden",
+    worksWith: "Arbeitet mit deinen Modulen",
+    fits: "passt zu {title}",
+    madeFor: "Für diese Welt gemacht",
+    builtIn: "Eingebaute Unterstützung für {system}",
+    sysBadge: "Eingebaut für {system}",
+    offFor: "Installiert, aber aus, passt zu {system}",
+    langSome: "Module von Sephral mit Texten auf {language}: {list}. Die anderen zeigen Englisch.",
+    langNone: "Die Module von Sephral zeigen auf {language} bisher Englisch.",
+    everySystem: "Für jedes System",
+    hidden: "{count} Module für andere Systeme oder Settings sind ausgeblendet.",
+    hiddenOne: "1 Modul für ein anderes System oder Setting ist ausgeblendet.",
+    packagePage: "Paketseite",
+    github: "Auf GitHub",
+    install: "Installieren",
+    installTitle: "{title} installieren",
+    installUnlisted: "{title} steht nicht in Foundrys Modulsuche. Installier es stattdessen mit seinem Link.",
+    installListed: "Such im Fenster „Modul installieren“ nach {title} oder installier es mit seinem Link.",
+    copyLink: "Link kopieren",
+    linkCopied: "Link kopiert. Füg ihn im Setup bei Manifest-URL ein.",
+    stepCopy: "Kopier den Link.",
+    stepSetup: "Geh zurück zum Setup, öffne Add-on-Module und klick auf Modul installieren.",
+    stepPaste: "Füg den Link unten im Fenster bei Manifest-URL ein und klick auf Installieren.",
+    stepEnable: "Starte diese Welt wieder. Dieses Fenster bietet dann Aktivieren für {title} an.",
+    forgeBazaar: "Öffne den Bazaar auf The Forge und klick unter Toolbox auf Install From Manifest.",
+    forgePaste: "Füg den Link ein und klick auf Install Module.",
+    forgeOpen: "Bazaar öffnen",
+    showHow: "Zeig es mir",
+    howNote: "Der Clip läuft von GitHub.",
+    returnSetup: "Zurück zum Setup",
+    setupNote: "Die Spieler in der Welt werden getrennt. Foundry fragt eventuell nach dem Administratorpasswort.",
+    installedBanner: "{title} ist jetzt installiert. Klick auf Aktivieren, um es in dieser Welt einzuschalten.",
+    allModules: "Alle Module auf GitHub",
+    discord: "Discord",
+    gmOnly: "Nur eine SL kann Sephral’s Module öffnen.",
+    hintClick: "Ein Klick zeigt es in Sephral’s Modules."
+  }
+};
+
+/** "de" for German Foundry, English otherwise. */
+export function language() {
+  return globalThis.game?.i18n?.lang === "de" ? "de" : "en";
+}
+
+/**
+ * A text of the window.
+ * @param {string} key
+ * @param {object} [data]
+ * @returns {string}
+ */
+export function text(key, data = {}) {
+  const source = TEXTS[language()]?.[key] ?? TEXTS.en[key] ?? key;
+  return source.replace(/\{(\w+)\}/g, (match, name) => (name in data ? String(data[name]) : match));
+}
+
+function localized(texts) {
+  return texts?.[language()] ?? texts?.en ?? "";
+}
+
+function escape(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+}
+
+/* -------------------------------------------- */
+/*  Registry                                    */
+/* -------------------------------------------- */
+
+function registry() {
+  globalThis[REGISTRY_KEY] ??= {
+    version: 0, owner: null, catalogRevision: 0, catalog: null, modules: new Map(), results: new Map()
+  };
+  return globalThis[REGISTRY_KEY];
+}
+
+// This copy's window. The newest copy in the world draws it, the newest catalog fills it.
+const SELF = { version: HUB_LIB_VERSION, open: openWindow };
+
+function claim() {
+  const reg = registry();
+  if (HUB_LIB_VERSION > reg.version) Object.assign(reg, { version: HUB_LIB_VERSION, owner: SELF });
+  if (CATALOG_REVISION > reg.catalogRevision) {
+    Object.assign(reg, { catalogRevision: CATALOG_REVISION, catalog: { modules: CATALOG, integrations: INTEGRATIONS } });
+  }
+}
+claim();
+
+/**
+ * What a module contributes. This contract stays compatible across versions of the library.
+ * @typedef HubModule
+ * @property {string} moduleId
+ * @property {object} [tested]          TESTED_VERSIONS: core, game systems or modules and the version verified last
+ * @property {(options: object) => Promise<object>} [selfTest]   Default: api.runSelfTest of the module
+ * @property {() => void} [openSettings]   Default: Foundry's settings on the tab of the module
+ */
+
+/**
+ * Register a module and add the button "Sephral's Modules" to its settings (GMs). Call in "init".
+ * @param {HubModule} module
+ */
+export function registerHubModule(module) {
+  if (!module?.moduleId) throw new Error("A hub module needs a moduleId");
+  claim();
+  hookReady();
+  registry().modules.set(module.moduleId, module);
+  const game = globalThis.game;
+  if (!globalThis.foundry?.applications?.api || (typeof game?.settings?.registerMenu !== "function")) return;
+  game.settings.registerMenu(module.moduleId, "sephralsModules", {
+    name: text("menuName"),
+    label: text("menuLabel"),
+    hint: text("menuHint"),
+    icon: "fa-solid fa-layer-group",
+    type: hubMenuType(),
+    restricted: true
+  });
+}
+
+/**
+ * A settings menu type whose button opens the window instead of a form.
+ * @returns {typeof foundry.applications.api.ApplicationV2}
+ */
+export function hubMenuType() {
+  return class SephralsModulesMenu extends globalThis.foundry.applications.api.ApplicationV2 {
+    async render() {
+      openSephralsModules();
+      return this;
+    }
+  };
+}
+
+let readyHooked = false;
+
+/** Once per copy: after the world starts again, the copy that draws the window shows a module the GM installed. */
+function hookReady() {
+  if (readyHooked || (typeof globalThis.Hooks?.once !== "function")) return;
+  readyHooked = true;
+  globalThis.Hooks.once("ready", showInstalled);
+}
+
+/**
+ * Count a use of the window in the usage statistics (usage.mjs beside this file, HUB_FEATURES there). Does nothing
+ * without the GM's consent, on players' screens or next to a library older than 6. Never throws.
+ * @param {string} key
+ * @returns {Promise<void>}
+ */
+export function countUse(key) {
+  return import("./usage.mjs").then((usage) => usage.countHub?.(key)).catch(() => {});
+}
+
+/** Open the window. GMs only. */
+export function openSephralsModules() {
+  if (!globalThis.game?.user?.isGM) {
+    globalThis.ui?.notifications?.warn(text("gmOnly"));
+    return null;
+  }
+  const owner = registry().owner ?? SELF;
+  return owner.open();
+}
+
+/* -------------------------------------------- */
+/*  Hints in context                            */
+/* -------------------------------------------- */
+
+const HINT_STYLE_ID = "sephrals-hub-hint-styles";
+const HINT_STYLES = `
+.sephrals-partner-hint { display: inline-flex; align-items: center; margin-left: 4px; opacity: 0.6; cursor: pointer; color: inherit; font-size: 0.9em; text-decoration: none; }
+.sephrals-partner-hint:hover, .sephrals-partner-hint:focus-visible { opacity: 1; text-decoration: none; }
+`;
+
+/**
+ * A small info icon with a tooltip where another of Sephral's modules would add something here, for the GM only and only
+ * while that module is not active. The text comes from INTEGRATIONS ({module: missing, with: here}). A click opens the
+ * window on that module. Empty string otherwise, so callers can always insert the result.
+ * @param {string} here      The module that shows the hint
+ * @param {string} missing   The module the hint is about
+ * @returns {string}         HTML
+ */
+export function partnerHint(here, missing) {
+  try {
+    return hintMarkup(here, missing);
+  } catch (error) {
+    // A hint is never worth an error in the module that shows it
+    console.warn("Sephral's Modules | A hint could not be drawn", error);
+    return "";
+  }
+}
+
+function hintMarkup(here, missing) {
+  const game = globalThis.game;
+  if (!game?.user?.isGM || !here || !missing || game.modules?.get?.(missing)?.active) return "";
+  const catalog = registry().catalog ?? { modules: CATALOG, integrations: INTEGRATIONS };
+  const integration = (catalog.integrations ?? []).find((item) => (item.module === missing) && (item.with === here));
+  if (!integration) return "";
+  const title = catalog.modules.find((entry) => entry.id === missing)?.title ?? shortTitle(game.modules?.get?.(missing)?.title) ?? missing;
+  const tip = `${title}: ${localized(integration.text)} ${text("hintClick")}`;
+  ensureHintStyles();
+  listenToHints();
+  return `<a class="sephrals-partner-hint" role="button" tabindex="0" data-sephrals-hint="${escape(missing)}"`
+    + ` data-tooltip="${escape(tip)}" aria-label="${escape(tip)}"><i class="fa-solid fa-circle-info" inert></i></a>`;
+}
+
+function ensureHintStyles() {
+  if ((typeof document?.getElementById !== "function") || document.getElementById(HINT_STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = HINT_STYLE_ID;
+  style.textContent = HINT_STYLES;
+  document.head.appendChild(style);
+}
+
+// One listener per page for the hints of every copy: the window opens on the module of the hint
+function listenToHints() {
+  const reg = registry();
+  if (reg.hintListener || (typeof document?.addEventListener !== "function")) return;
+  reg.hintListener = true;
+  const open = (event) => {
+    const hint = event.target?.closest?.("[data-sephrals-hint]");
+    if (!hint || ((event.type === "keydown") && !["Enter", " "].includes(event.key))) return;
+    event.preventDefault();
+    event.stopPropagation();
+    registry().focus = hint.dataset.sephralsHint;
+    openSephralsModules();
+  };
+  document.addEventListener("click", open, true);
+  document.addEventListener("keydown", open, true);
+}
+
+/* -------------------------------------------- */
+/*  What the window shows                       */
+/* -------------------------------------------- */
+
+/** "Sephral’s Loot Ledger" becomes "Loot Ledger". */
+export function shortTitle(title) {
+  return String(title ?? "").replace(/^Sephral[’']s\s+/, "");
+}
+
+/**
+ * Is version a newer than version b? Numeric parts, missing parts count as 0.
+ * @param {string} a
+ * @param {string} b
+ * @returns {boolean}
+ */
+/**
+ * The demo video of a catalog entry, or null when the catalog keeps it out of the window.
+ * @param {{id: string, video?: boolean}} [entry]
+ * @returns {string|null}
+ */
+export function demoVideo(entry) {
+  return entry?.id && (entry.video !== false) ? `${VIDEO_BASE}/${entry.id}/main/media/demo.mp4` : null;
+}
+
+/**
+ * The manifest URL of a Sephral module: the module.json of its latest GitHub release.
+ * @param {string} moduleId
+ * @returns {string}
+ */
+export function manifestUrl(moduleId) {
+  return `${GITHUB}/${moduleId}/releases/latest/download/module.json`;
+}
+
+/**
+ * What to do with the module a GM set out to install.
+ * @param {{id: string, at: number}|null} pending
+ * @param {{get: (id: string) => object}} modules   game.modules
+ * @param {number} now   Milliseconds
+ * @returns {"show"|"wait"|"drop"|null}   show: installed and off, wait: not installed yet, drop: done or too old
+ */
+export function pendingState(pending, modules, now) {
+  if (!pending?.id) return null;
+  if (!Number.isFinite(pending.at) || ((now - pending.at) > (PENDING_DAYS * 86400000))) return "drop";
+  const module = modules?.get?.(pending.id);
+  if (!module) return "wait";
+  return module.active ? "drop" : "show";
+}
+
+/** The Forge declares a global class, not a property of globalThis, and serves its games from forge-vtt.com. */
+function onTheForge() {
+  // eslint-disable-next-line no-undef
+  if ((typeof ForgeVTT !== "undefined") && ForgeVTT?.usingTheForge) return true;
+  return /(^|\.)forge-vtt\.com$/.test(globalThis.location?.hostname ?? "");
+}
+
+export function isNewer(a, b) {
+  const parts = (value) => String(value ?? "").split(".").map((part) => parseInt(part, 10) || 0);
+  const left = parts(a);
+  const right = parts(b);
+  for (let i = 0; i < Math.max(left.length, right.length); i++) {
+    const difference = (left[i] ?? 0) - (right[i] ?? 0);
+    if (difference) return difference > 0;
+  }
+  return false;
+}
+
+/**
+ * The installed Sephral modules, active ones first.
+ * @param {Iterable<object>} modules   game.modules
+ * @returns {{id: string, title: string, version: string, active: boolean}[]}
+ */
+export function installedModules(modules) {
+  return Array.from(modules ?? [])
+    .filter((module) => module?.id?.startsWith(PREFIX) && !HIDDEN.includes(module.id))
+    .map((module) => ({ id: module.id, title: shortTitle(module.title || module.id), version: module.version ?? "", active: Boolean(module.active) }))
+    .sort((a, b) => (Number(b.active) - Number(a.active)) || a.title.localeCompare(b.title));
+}
+
+/**
+ * The versions in the world that are newer than a module verified, grouped by what was updated.
+ * @param {{title: string, tested: object}[]} modules   Active modules with their TESTED_VERSIONS
+ * @param {{core: string, system: {id: string, title: string, version: string}, modules: Map<string, {title: string, version: string, active: boolean}>}} world
+ * @returns {{label: string, version: string, modules: string[]}[]}
+ */
+export function newerThanTested(modules, world) {
+  const found = new Map();
+  for (const module of modules) {
+    for (const [key, tested] of Object.entries(module.tested ?? {})) {
+      let label;
+      let version;
+      if ((key === "core") || (key === "foundry")) {
+        label = "Foundry";
+        version = world.core;
+      } else if (key === world.system?.id) {
+        label = world.system.title || key;
+        version = world.system.version;
+      } else {
+        const other = world.modules?.get(key);
+        if (!other?.active) continue;
+        label = other.title || key;
+        version = other.version;
+      }
+      if (!version || !isNewer(version, tested)) continue;
+      const entry = found.get(label) ?? { label, version, modules: [] };
+      entry.modules.push(module.title);
+      found.set(label, entry);
+    }
+  }
+  return Array.from(found.values());
+}
+
+/**
+ * The problems a self-test reported. The modules return {problems, checks}, the Crucible sheet {integrations,
+ * results}, the portrait switcher {integrations, missing}.
+ * @param {object} result
+ * @returns {{state: "ok"|"warn", problems: string[], checks: number|null}}
+ */
+export function classifyResult(result) {
+  const problems = [];
+  const describe = (entry) => {
+    if (typeof entry === "string") return entry;
+    if (entry?.name && Array.isArray(entry.problems)) return `${entry.name}: ${entry.problems.map(describe).join(", ")}`;
+    return entry?.message ?? entry?.label ?? entry?.name ?? JSON.stringify(entry);
+  };
+  const list = (value) => (Array.isArray(value) ? value : []);
+  for (const entry of list(result?.problems)) problems.push(describe(entry));
+  for (const entry of list(result?.integrations)) problems.push(describe(entry));
+  for (const entry of list(result?.missing)) problems.push(describe(entry));
+  for (const entry of list(result?.results)) if (entry && (entry.ok === false)) problems.push(describe(entry));
+  const checks = Number.isFinite(result?.checks) && (result.checks > 0) ? result.checks
+    : (Array.isArray(result?.checks) ? result.checks.length : null);
+  return { state: problems.length ? "warn" : "ok", problems, checks };
+}
+
+/**
+ * The modules not installed yet that fit the world, in groups.
+ * @param {{modules: object[], integrations: object[]}} catalog
+ * @param {{installed: Set<string>, active: Set<string>, system: string, core?: number, lang?: string}} world
+ *   installed: installed Sephral modules, active: every active module id (Sephral and others), system: game system id
+ * @returns {{works: {entry: object, partner: string, text: object}[], made: object[], builtIn: object[], every: object[], off: object[], hidden: number}}
+ */
+export function suggestions(catalog, { installed, active, system, core = Infinity, lang = "en" }) {
+  const groups = { works: [], made: [], builtIn: [], every: [], off: [], hidden: 0 };
+  for (const entry of catalog.modules ?? []) {
+    if (entry.released === false) continue;
+    const fits = (!entry.systems || entry.systems.includes(system)) && (!entry.core || (core >= entry.core));
+    const needsMet = !entry.needs || active.has(entry.needs);
+    if (installed.has(entry.id)) {
+      // Installed but switched off: only worth a mention where it was made for this system.
+      if (!active.has(entry.id) && fits && needsMet && supportsSystem(entry, system)) groups.off.push(entry);
+      continue;
+    }
+    if (!fits || !needsMet) {
+      groups.hidden++;
+      continue;
+    }
+    const integration = (catalog.integrations ?? []).find((item) => (item.module === entry.id) && active.has(item.with));
+    if (integration) groups.works.push({ entry, partner: integration.with, text: integration.text });
+    else if (entry.systems || entry.needs) groups.made.push(entry);
+    else if (entry.supports?.includes(system)) groups.builtIn.push(entry);
+    else groups.every.push(entry);
+  }
+  // Modules with texts in the GM's language first, the order of the catalog otherwise.
+  const speaks = (entry) => (hasLanguage(entry, lang) ? 0 : 1);
+  groups.made.sort((a, b) => speaks(a) - speaks(b));
+  groups.builtIn.sort((a, b) => speaks(a) - speaks(b));
+  groups.every.sort((a, b) => speaks(a) - speaks(b));
+  return groups;
+}
+
+/** True when the module has built in support for the game system (an adapter or preset) or was made for it. */
+export function supportsSystem(entry, system) {
+  return Boolean(system) && Boolean(entry?.supports?.includes(system) || entry?.systems?.includes(system));
+}
+
+/** True when the module has a lang file for the language, Foundry's "pt-BR" also matches "pt". */
+export function hasLanguage(entry, lang) {
+  const base = String(lang ?? "en").split("-")[0].toLowerCase();
+  return (entry?.langs ?? DEFAULT_LANGS).some((code) => code.toLowerCase().split("-")[0] === base);
+}
+
+/**
+ * What the window says about the GM's language. Only languages other than English: the languages every module has
+ * (English, German) need no remark, otherwise it names the modules that have texts in it, or says there are none.
+ * @param {object[]} entries   catalog modules
+ * @param {string} lang        game.i18n.lang
+ * @returns {{kind: "none"|"some"|"quiet", titles: string[]}}
+ */
+export function languageNote(entries, lang) {
+  const base = String(lang ?? "en").split("-")[0].toLowerCase();
+  if (DEFAULT_LANGS.includes(base)) return { kind: "quiet", titles: [] };
+  const titles = (entries ?? []).filter((entry) => entry.released !== false && hasLanguage(entry, lang)).map((entry) => entry.title);
+  return { kind: titles.length ? "some" : "none", titles };
+}
+
+/* -------------------------------------------- */
+/*  Actions                                     */
+/* -------------------------------------------- */
+
+/**
+ * Run the self-test of a module and keep the result for the window.
+ * @param {string} moduleId
+ * @param {() => void} [rerender]
+ * @param {{report?: boolean}} [options]   report: the module also whispers its own report to the GM
+ */
+export async function runSelfTest(moduleId, rerender = () => {}, { report = false } = {}) {
+  const reg = registry();
+  const module = reg.modules.get(moduleId);
+  const run = module?.selfTest ?? globalThis.game?.modules?.get(moduleId)?.api?.runSelfTest;
+  if (typeof run !== "function") {
+    reg.results.set(moduleId, { state: "missing" });
+    rerender();
+    return;
+  }
+  reg.results.set(moduleId, { state: "running" });
+  rerender();
+  try {
+    reg.results.set(moduleId, classifyResult(await run({ report })));
+  } catch (error) {
+    console.error(`Sephral's Modules | The self-test of ${moduleId} failed`, error);
+    reg.results.set(moduleId, { state: "error", error: String(error?.message ?? error) });
+  }
+  rerender();
+}
+
+/**
+ * Run a task without the info and warning notifications it raises: every self-test announces its own result, the
+ * window already shows them all. Errors still appear.
+ * @param {() => Promise<*>} task
+ */
+export async function quietly(task) {
+  const notifications = globalThis.ui?.notifications;
+  const notify = notifications?.notify;
+  if (typeof notify !== "function") return task();
+  notifications.notify = function (message, type = "info", ...rest) {
+    if (type === "error") return notify.call(this, message, type, ...rest);
+    return { message, type };
+  };
+  try {
+    return await task();
+  } finally {
+    notifications.notify = notify;
+  }
+}
+
+/** Foundry's settings on the tab of a module. */
+async function openSettings(moduleId) {
+  const custom = registry().modules.get(moduleId)?.openSettings;
+  if (typeof custom === "function") return custom();
+  const sheet = globalThis.game.settings.sheet;
+  await sheet.render({ force: true });
+  try {
+    sheet.changeTab(moduleId, "categories");
+  } catch (error) {
+    console.warn(`Sephral's Modules | The settings have no tab for ${moduleId}`, error);
+  }
+  sheet.bringToFront?.();
+}
+
+/**
+ * The modules to switch on for a module: itself and what it requires, recursively. Missing ones are named.
+ * @param {string} moduleId
+ * @param {{get: (id: string) => object}} modules   game.modules
+ * @returns {{ids: string[], missing: string[]}}
+ */
+export function modulesToEnable(moduleId, modules) {
+  const ids = [];
+  const missing = [];
+  const visit = (id) => {
+    if (ids.includes(id)) return;
+    const module = modules.get(id);
+    if (!module) {
+      missing.push(id);
+      return;
+    }
+    ids.push(id);
+    for (const requirement of Array.from(module.relationships?.requires ?? [])) {
+      if (requirement?.type && (requirement.type !== "module")) continue;
+      if (requirement?.id) visit(requirement.id);
+    }
+  };
+  visit(moduleId);
+  return { ids, missing };
+}
+
+async function enableModule(moduleId) {
+  const game = globalThis.game;
+  const foundry = globalThis.foundry;
+  if (!game.user?.can?.("SETTINGS_MODIFY")) return;
+  const title = shortTitle(game.modules.get(moduleId)?.title || moduleId);
+  const { ids, missing } = modulesToEnable(moduleId, game.modules);
+  if (missing.length) {
+    globalThis.ui.notifications.error(text("enableMissing", { title, missing: missing.join(", ") }));
+    return;
+  }
+  const confirmed = await foundry.applications.api.DialogV2.confirm({
+    window: { title: text("enableTitle", { title }) },
+    content: `<p>${escape(text("enableText", { title }))}</p>`,
+    rejectClose: false
+  });
+  if (!confirmed) return;
+  await countUse("hubEnable");
+  const key = foundry.applications?.sidebar?.apps?.ModuleManagement?.SETTING ?? "moduleConfiguration";
+  const configuration = foundry.utils.deepClone(game.settings.get("core", key) ?? {});
+  for (const id of ids) configuration[id] = true;
+  await game.settings.set("core", key, configuration);
+  game.socket?.emit?.("reload");
+  foundry.utils.debouncedReload?.();
+}
+
+function readPending() {
+  try {
+    return JSON.parse(globalThis.localStorage?.getItem(PENDING_KEY) ?? "null");
+  } catch {
+    return null;
+  }
+}
+
+function writePending(moduleId) {
+  try {
+    if (moduleId) globalThis.localStorage?.setItem(PENDING_KEY, JSON.stringify({ id: moduleId, at: Date.now() }));
+    else globalThis.localStorage?.removeItem(PENDING_KEY);
+  } catch {
+    // Without storage the window only stays closed after the install
+  }
+}
+
+/** The module installed since the GM asked for it, highlighted until the world reloads. */
+let justInstalled = null;
+
+function showInstalled() {
+  const game = globalThis.game;
+  if ((registry().owner !== SELF) || !game?.user?.isGM) return;
+  const pending = readPending();
+  const state = pendingState(pending, game.modules, Date.now());
+  if (state === "drop") writePending(null);
+  if (state !== "show") return;
+  writePending(null);
+  justInstalled = pending.id;
+  void countUse("hubInstalled");
+  openWindow({ auto: true });
+}
+
+async function copyLink(entry) {
+  if (!entry) return;
+  writePending(entry.id);
+  try {
+    await globalThis.game.clipboard.copyPlainText(manifestUrl(entry.id));
+    globalThis.ui.notifications?.info(text("linkCopied"));
+  } catch (error) {
+    // The field next to the button still holds the link to copy by hand
+    console.warn("Sephral's Modules | The link could not be copied", error);
+  }
+}
+
+/* -------------------------------------------- */
+/*  Window                                      */
+/* -------------------------------------------- */
+
+let WindowClass = null;
+
+/**
+ * @param {{auto?: boolean}} [options]   auto: opened by the window itself, not by the GM (older copies pass nothing)
+ */
+function openWindow({ auto = false } = {}) {
+  if (!auto) void countUse("hubOpen");
+  // A hint in context asked for a module: unfold the other modules when it is not installed
+  focusModule = registry().focus ?? null;
+  registry().focus = null;
+  const unfold = Boolean(focusModule) && !globalThis.game?.modules?.get?.(focusModule);
+  WindowClass ??= createWindowClass();
+  const existing = globalThis.foundry.applications.instances?.get?.(WINDOW_ID);
+  if (existing) {
+    if (unfold) existing.moreOpen = true;
+    existing.render({ force: true });
+    existing.bringToFront?.();
+    return existing;
+  }
+  ensureStyles();
+  const app = new WindowClass();
+  if (unfold) app.moreOpen = true;
+  app.render({ force: true });
+  return app;
+}
+
+/** The module a hint in context opened the window for, highlighted until the window opens again without one. */
+let focusModule = null;
+
+function createWindowClass() {
+  const { ApplicationV2 } = globalThis.foundry.applications.api;
+  return class SephralsModules extends ApplicationV2 {
+    static DEFAULT_OPTIONS = {
+      id: WINDOW_ID,
+      classes: ["sephrals-hub"],
+      window: { icon: "fa-solid fa-layer-group", resizable: true },
+      position: { width: 720, height: 760 },
+      actions: {
+        selfTest(event, target) {
+          void runSelfTest(target.dataset.module, () => this.render(), { report: true });
+        },
+        runAll() {
+          void quietly(async () => {
+            for (const module of installedModules(globalThis.game.modules)) {
+              if (module.active) await runSelfTest(module.id, () => this.render());
+            }
+          });
+        },
+        settings(event, target) {
+          void openSettings(target.dataset.module);
+        },
+        enable(event, target) {
+          void enableModule(target.dataset.module);
+        },
+        debugFile() {
+          const first = Array.from(registry().modules.keys())[0];
+          void import("./debug-file.mjs").then(({ saveDebugFile }) => saveDebugFile(null, { moduleId: first }));
+        },
+        toggleMore() {
+          this.moreOpen = !this.moreOpen;
+          this.render();
+        },
+        video(event, target) {
+          openVideo(target.dataset.module);
+        },
+        install(event, target) {
+          openInstall(target.dataset.module);
+        }
+      }
+    };
+
+    moreOpen = false;
+
+    get title() {
+      return text("title");
+    }
+
+    async _onFirstRender(context, options) {
+      await super._onFirstRender(context, options);
+      // Elements with data-count are counted when clicked: links, install and video buttons of other modules
+      this.element.addEventListener("click", (event) => {
+        const key = event.target?.closest?.("[data-count]")?.dataset.count;
+        if (key) void countUse(key);
+      });
+    }
+
+    async _renderHTML() {
+      return renderContent(this.moreOpen);
+    }
+
+    _replaceHTML(result, content) {
+      content.innerHTML = result;
+    }
+
+    async _onRender(context, options) {
+      await super._onRender(context, options);
+      // The module a hint asked for: scrolled into view once the window is in the page and laid out
+      const focus = this.element?.querySelector?.(".sh-focus");
+      if (focus) globalThis.requestAnimationFrame?.(() => focus.scrollIntoView?.({ block: "center" }));
+    }
+  };
+}
+
+let VideoWindowClass = null;
+
+/** Play the demo video of a catalog module in a window of its own. */
+function openVideo(moduleId) {
+  const catalog = registry().catalog ?? { modules: CATALOG };
+  const entry = catalog.modules.find((candidate) => candidate.id === moduleId);
+  const src = demoVideo(entry);
+  if (!src) return null;
+  VideoWindowClass ??= createVideoWindowClass();
+  ensureStyles();
+  const existing = globalThis.foundry.applications.instances?.get?.(VIDEO_WINDOW_ID);
+  const app = existing ?? new VideoWindowClass();
+  app.entry = entry;
+  // A new window has no element before its first render
+  void app.render({ force: true }).then(() => app.bringToFront?.());
+  return app;
+}
+
+function createVideoWindowClass() {
+  const { ApplicationV2 } = globalThis.foundry.applications.api;
+  return class SephralsModulesVideo extends ApplicationV2 {
+    static DEFAULT_OPTIONS = {
+      id: VIDEO_WINDOW_ID,
+      classes: ["sephrals-hub", "sephrals-hub-video"],
+      window: { icon: "fa-solid fa-circle-play", resizable: true },
+      position: { width: 860, height: "auto" }
+    };
+
+    entry = null;
+
+    get title() {
+      return text("videoTitle", { title: this.entry?.title ?? "" });
+    }
+
+    async _renderHTML() {
+      const id = this.entry?.id ?? "";
+      return `<video class="sh-video" src="${escape(demoVideo(this.entry) ?? "")}" controls autoplay muted loop playsinline></video>
+        <p class="sh-hint sh-video-note">${escape(text("videoSource"))} ${link(`${GITHUB}/${id}#readme`, text("github"))}</p>
+        <p class="sh-note sh-warn sh-video-error" hidden><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> ${escape(text("videoError"))}</p>`;
+    }
+
+    _replaceHTML(result, content) {
+      content.innerHTML = result;
+      const error = content.querySelector(".sh-video-error");
+      content.querySelector("video")?.addEventListener("error", () => { if (error) error.hidden = false; });
+    }
+  };
+}
+
+let InstallWindowClass = null;
+
+/** The steps to install a catalog module, in a window of its own. */
+function openInstall(moduleId) {
+  const catalog = registry().catalog ?? { modules: CATALOG };
+  const entry = catalog.modules.find((candidate) => candidate.id === moduleId);
+  if (!entry) return null;
+  InstallWindowClass ??= createInstallWindowClass();
+  ensureStyles();
+  const existing = globalThis.foundry.applications.instances?.get?.(INSTALL_WINDOW_ID);
+  const app = existing ?? new InstallWindowClass();
+  app.entry = entry;
+  app.showClip = false;
+  void app.render({ force: true }).then(() => app.bringToFront?.());
+  return app;
+}
+
+function createInstallWindowClass() {
+  const { ApplicationV2 } = globalThis.foundry.applications.api;
+  return class SephralsModulesInstall extends ApplicationV2 {
+    static DEFAULT_OPTIONS = {
+      id: INSTALL_WINDOW_ID,
+      classes: ["sephrals-hub", "sephrals-hub-install"],
+      window: { icon: "fa-solid fa-download", resizable: true },
+      position: { width: 640, height: "auto" },
+      actions: {
+        copyLink() {
+          void copyLink(this.entry);
+        },
+        showHow() {
+          this.showClip = true;
+          this.render();
+        },
+        returnSetup() {
+          writePending(this.entry?.id);
+          void globalThis.game.shutDown();
+        }
+      }
+    };
+
+    entry = null;
+    showClip = false;
+
+    get title() {
+      return text("installTitle", { title: this.entry?.title ?? "" });
+    }
+
+    async _renderHTML() {
+      return renderInstall(this.entry, this.showClip);
+    }
+
+    _replaceHTML(result, content) {
+      content.innerHTML = result;
+      const field = content.querySelector(".sh-link input");
+      field?.addEventListener("focus", () => field.select());
+      const error = content.querySelector(".sh-video-error");
+      content.querySelector("video")?.addEventListener("error", () => { if (error) error.hidden = false; });
+    }
+  };
+}
+
+function renderInstall(entry, showClip) {
+  if (!entry) return "";
+  const forge = onTheForge();
+  const steps = forge ? ["stepCopy", "forgeBazaar", "forgePaste", "stepEnable"] : ["stepCopy", "stepSetup", "stepPaste", "stepEnable"];
+  const clip = showClip
+    ? `<video class="sh-video" src="${escape(INSTALL_VIDEO)}" controls autoplay muted loop playsinline></video>
+      <p class="sh-hint">${escape(text("howNote"))}</p>
+      <p class="sh-note sh-warn sh-video-error" hidden><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> ${escape(text("videoError"))}</p>`
+    : `<button type="button" class="sh-button" data-action="showHow"><i class="fa-solid fa-circle-play" aria-hidden="true"></i> ${escape(text("showHow"))}</button>`;
+  const leave = forge
+    ? `<a class="sh-button" href="${FORGE_BAZAAR}" target="_blank" rel="noopener"><i class="fa-solid fa-store" aria-hidden="true"></i> ${escape(text("forgeOpen"))}</a>`
+    : `<button type="button" class="sh-button" data-action="returnSetup"><i class="fa-solid fa-door-open" aria-hidden="true"></i> ${escape(text("returnSetup"))}</button>
+      <span class="sh-hint">${escape(text("setupNote"))}</span>`;
+  return `
+  <p class="sh-lead">${escape(text(entry.listed ? "installListed" : "installUnlisted", { title: entry.title }))}</p>
+  <div class="sh-link">
+    <input type="text" readonly value="${escape(manifestUrl(entry.id))}" aria-label="Manifest URL">
+    <button type="button" class="sh-button sh-primary" data-action="copyLink"><i class="fa-solid fa-copy" aria-hidden="true"></i> ${escape(text("copyLink"))}</button>
+  </div>
+  <ol class="sh-steps">${steps.map((key) => `<li>${escape(text(key, { title: entry.title }))}</li>`).join("")}</ol>
+  ${forge ? "" : `<div class="sh-clip">${clip}</div>`}
+  <footer class="sh-install-foot">${leave}</footer>`;
+}
+
+function videoButton(entry) {
+  return demoVideo(entry) ? iconButton("video", entry.id, text("video"), "fa-solid fa-play", "sh-flame") : "";
+}
+
+function link(href, label, icon = "fa-solid fa-arrow-up-right-from-square", count = "") {
+  return `<a href="${escape(href)}" target="_blank" rel="noopener"${count ? ` data-count="${count}"` : ""}>${escape(label)} <i class="${icon}" aria-hidden="true"></i></a>`;
+}
+
+function packageLink(entry) {
+  return entry.listed
+    ? link(`https://foundryvtt.com/packages/${entry.id}`, text("packagePage"), undefined, "hubLink")
+    : link(`${GITHUB}/${entry.id}`, text("github"), undefined, "hubLink");
+}
+
+function iconButton(action, moduleId, label, icon, extra = "") {
+  return `<button type="button" class="sh-icon${extra ? ` ${extra}` : ""}" data-action="${action}" data-module="${escape(moduleId)}" `
+    + `data-tooltip="${escape(label)}" aria-label="${escape(label)}"><i class="${icon}" aria-hidden="true"></i></button>`;
+}
+
+function testLine(module, result, missing = []) {
+  if (!module.active) {
+    const note = missing.length ? text("offMissing", { missing: missing.join(", ") }) : text("offNote");
+    return `<div class="sh-note">${escape(note)}</div>`;
+  }
+  const line = (state, icon, label) => `<div class="sh-note sh-${state}"><i class="${icon}" aria-hidden="true"></i> ${escape(label)}</div>`;
+  switch (result?.state) {
+    case "running": return line("running", "fa-solid fa-spinner fa-spin", text("testRunning"));
+    case "ok": return line("ok", "fa-solid fa-circle-check",
+      result.checks ? text("testOkChecks", { checks: result.checks }) : text("testOk"));
+    case "warn": {
+      const shown = result.problems.slice(0, PROBLEM_LIMIT).map((problem) => `<li>${escape(problem)}</li>`).join("");
+      const rest = result.problems.length - PROBLEM_LIMIT;
+      const label = result.problems.length === 1 ? text("testProblem") : text("testProblems", { count: result.problems.length });
+      return line("warn", "fa-solid fa-triangle-exclamation", label)
+        + `<ul class="sh-problems">${shown}${rest > 0 ? `<li>${escape(text("moreProblems", { count: rest }))}</li>` : ""}</ul>`;
+    }
+    case "error": return line("warn", "fa-solid fa-triangle-exclamation", text("testError", { error: result.error }));
+    case "missing": return line("none", "fa-regular fa-circle", text("testMissing"));
+    default: return line("none", "fa-regular fa-circle", text("testNone"));
+  }
+}
+
+const SHORT_SYSTEMS = { dnd5e: "D&D 5e", pf2e: "PF2e", sf2e: "SF2e", swade: "SWADE", crucible: "Crucible", daggerheart: "Daggerheart",
+  tormenta20: "Tormenta20" };
+
+/** A short name for a pill: "D&D 5e" instead of the long title, the title of systems without a short name. */
+export function shortSystem(system) {
+  return SHORT_SYSTEMS[system?.id] ?? system?.title ?? "";
+}
+
+/** Quiet pills: built in support for the world's system, and a language the other modules lack. */
+function infoPills(entry, { system = false } = {}) {
+  if (!entry) return "";
+  const game = globalThis.game;
+  let html = "";
+  if (system && supportsSystem(entry, game.system?.id)) {
+    html += `<span class="sh-pill sh-sys">${escape(text("sysBadge", { system: shortSystem(game.system) }))}</span>`;
+  }
+  const lang = game.i18n?.lang ?? "en";
+  const base = String(lang).split("-")[0].toLowerCase();
+  if (!DEFAULT_LANGS.includes(base) && hasLanguage(entry, lang)) {
+    html += `<span class="sh-pill sh-lang">${escape(languageName(lang))}</span>`;
+  }
+  return html;
+}
+
+/** The name of a language in that language ("ru" becomes "русский"), the code when the browser does not know it. */
+export function languageName(lang) {
+  try {
+    const name = new Intl.DisplayNames([lang], { type: "language" }).of(lang);
+    return name ? name.charAt(0).toLocaleUpperCase(lang) + name.slice(1) : lang;
+  } catch (error) {
+    return String(lang);
+  }
+}
+
+function moduleRow(module, entry) {
+  const inCatalog = Boolean(entry);
+  const result = registry().results.get(module.id);
+  const missing = module.active ? [] : modulesToEnable(module.id, globalThis.game.modules).missing;
+  const manual = inCatalog ? `<a class="sh-icon" href="${GITHUB}/${escape(module.id)}/blob/main/MANUAL.md" target="_blank" rel="noopener" `
+    + `data-tooltip="${escape(text("manual"))}" aria-label="${escape(text("manual"))}"><i class="fa-solid fa-book" aria-hidden="true"></i></a>` : "";
+  let actions = "";
+  if (module.active) {
+    actions = iconButton("selfTest", module.id, text("selfTest"), "fa-solid fa-stethoscope")
+      + iconButton("settings", module.id, text("settings"), "fa-solid fa-gear");
+  } else if (!missing.length) {
+    actions = `<button type="button" class="sh-button" data-action="enable" data-module="${escape(module.id)}">`
+      + `<i class="fa-solid fa-power-off" aria-hidden="true"></i> ${escape(text("enable"))}</button>`;
+  }
+  const fresh = !module.active && (module.id === justInstalled);
+  const focus = !module.active && (module.id === focusModule);
+  return `<li class="sh-row${module.active ? "" : " sh-inactive"}${fresh ? " sh-row-new" : ""}${focus ? " sh-row-new sh-focus" : ""}">
+    <div class="sh-row-main">
+      <div class="sh-row-title"><strong>${escape(module.title)}</strong>
+        <span class="sh-pill">${escape(module.version)}</span>
+        <span class="sh-pill ${module.active ? "sh-on" : ""}">${escape(text(module.active ? "active" : "off"))}</span>${infoPills(entry, { system: true })}</div>
+      ${testLine(module, result, missing)}
+    </div>
+    <div class="sh-row-actions">${actions}${manual}${videoButton(entry)}</div>
+  </li>`;
+}
+
+function offCard(entry) {
+  return `<li class="sh-card${entry.id === focusModule ? " sh-card-focus sh-focus" : ""}">
+    <div class="sh-row-title"><strong>${escape(entry.title)}</strong>${infoPills(entry)}</div>
+    <p>${escape(localized(entry.text))}</p>
+    <div class="sh-card-links"><button type="button" class="sh-play sh-get" data-action="enable" data-module="${escape(entry.id)}"><i class="fa-solid fa-power-off" aria-hidden="true"></i><span>${escape(text("enable"))}</span></button></div>
+  </li>`;
+}
+
+function card(entry, extra = {}) {
+  const fit = extra.partner ? `<span class="sh-pill sh-accent">${escape(text("fits", { title: extra.partner }))}</span>` : "";
+  return `<li class="sh-card${extra.partner ? " sh-card-works" : ""}${entry.id === focusModule ? " sh-card-focus sh-focus" : ""}">
+    <div class="sh-row-title"><strong>${escape(entry.title)}</strong>${fit}${infoPills(entry, { system: !extra.quietSystem })}</div>
+    <p>${escape(extra.text ? localized(extra.text) : localized(entry.text))}</p>
+    <div class="sh-card-links"><button type="button" class="sh-play sh-get" data-action="install" data-count="hubLink" data-module="${escape(entry.id)}"><i class="fa-solid fa-download" aria-hidden="true"></i><span>${escape(text("install"))}</span></button>${demoVideo(entry) ? `<button type="button" class="sh-play sh-flame" data-action="video" data-count="hubVideo" data-module="${escape(entry.id)}"><i class="fa-solid fa-play" aria-hidden="true"></i><span>${escape(text("watchVideo"))}</span></button>` : ""}${packageLink(entry)}</div>
+  </li>`;
+}
+
+function renderContent(moreOpen) {
+  const game = globalThis.game;
+  const reg = registry();
+  const catalog = reg.catalog ?? { modules: CATALOG, integrations: INTEGRATIONS };
+  const catalogById = new Map(catalog.modules.map((entry) => [entry.id, entry]));
+  const installed = installedModules(game.modules);
+  const activeCount = installed.filter((module) => module.active).length;
+  const fresh = installed.find((module) => !module.active && (module.id === justInstalled));
+  const system = game.system;
+
+  const worldModules = new Map(Array.from(game.modules ?? []).map((module) => [module.id, module]));
+  const newer = newerThanTested(
+    installed.filter((module) => module.active && reg.modules.get(module.id)?.tested)
+      .map((module) => ({ title: module.title, tested: reg.modules.get(module.id).tested })),
+    { core: game.version, system: { id: system.id, title: system.title, version: system.version }, modules: worldModules }
+  );
+  const newerList = newer.map((entry) => `${entry.label} ${entry.version} (${entry.modules.join(", ")})`).join(", ");
+
+  const summary = [
+    text("summary", { installed: installed.length, active: activeCount }),
+    `Foundry ${game.version}`,
+    `${system.title} ${system.version}`
+  ].join(" · ");
+
+  const groups = suggestions(catalog, {
+    installed: new Set(installed.map((module) => module.id)),
+    active: new Set(Array.from(game.modules ?? []).filter((module) => module.active).map((module) => module.id)),
+    system: system.id,
+    core: Number(game.release?.generation ?? Infinity),
+    lang: game.i18n?.lang ?? "en"
+  });
+  const fitting = groups.off.length + groups.works.length + groups.made.length + groups.builtIn.length + groups.every.length;
+  const langNote = languageNote(catalog.modules, game.i18n?.lang ?? "en");
+  const langLine = langNote.kind === "quiet" ? ""
+    : `<p class="sh-hint sh-lang-note">${escape(langNote.kind === "none" ? text("langNone", { language: languageName(game.i18n.lang) })
+      : text("langSome", { language: languageName(game.i18n.lang), list: langNote.titles.join(", ") }))}</p>`;
+  const titleOf = (id) => shortTitle(game.modules.get(id)?.title)
+    || catalog.modules.find((entry) => entry.id === id)?.title || id;
+  const section = (label, cards) => (cards.length ? `<h3>${escape(label)}</h3><ul class="sh-cards">${cards.join("")}</ul>` : "");
+  const moreBody = moreOpen ? [
+    section(text("offFor", { system: system.title }), groups.off.map((entry) => offCard(entry))),
+    section(text("worksWith"), groups.works.map((item) => card(item.entry, { partner: titleOf(item.partner), text: item.text }))),
+    section(text("madeFor"), groups.made.map((entry) => card(entry, { quietSystem: true }))),
+    section(text("builtIn", { system: system.title }), groups.builtIn.map((entry) => card(entry, { quietSystem: true }))),
+    section(text("everySystem"), groups.every.map((entry) => card(entry))),
+    groups.hidden ? `<p class="sh-hint">${escape(groups.hidden === 1 ? text("hiddenOne") : text("hidden", { count: groups.hidden }))}</p>` : ""
+  ].join("") : "";
+  const moreCount = fitting === 0 ? text("moreNone") : (fitting === 1 ? text("moreOne") : text("moreCount", { count: fitting }));
+  const toggle = fitting ? `<button type="button" class="sh-button" data-action="toggleMore" aria-expanded="${moreOpen}"${moreOpen ? "" : " data-count=\"hubMore\""}>
+      <i class="fa-solid fa-chevron-${moreOpen ? "up" : "down"}" aria-hidden="true"></i> ${escape(text(moreOpen ? "hide" : "show"))}</button>` : "";
+
+  return `
+  <section class="sh-hero">
+    <div class="sh-hero-text">
+      <div class="sh-eyebrow">${escape(text("title"))}</div>
+      <h2>${escape(text("heading"))}</h2>
+      <p>${escape(summary)}</p>
+    </div>
+    <div class="sh-hero-actions">
+      <button type="button" class="sh-button sh-primary" data-action="runAll"><i class="fa-solid fa-stethoscope" aria-hidden="true"></i> ${escape(text("runAll"))}</button>
+      <button type="button" class="sh-button" data-action="debugFile"><i class="fa-solid fa-bug" aria-hidden="true"></i> ${escape(text("debugFile"))}</button>
+    </div>
+  </section>
+  ${fresh ? `<div class="sh-banner sh-banner-new"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><p>${escape(text("installedBanner", { title: fresh.title }))}</p></div>` : ""}
+  ${newer.length ? `<div class="sh-banner"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><p>${escape(text("newer", { list: newerList }))}</p></div>` : ""}
+  <section class="sh-panel">
+    <header class="sh-panel-head"><h2>${escape(text("inWorld"))}</h2><span class="sh-hint">${escape(text("inWorldHint"))}</span></header>
+    ${langLine}
+    <ul class="sh-rows">${installed.map((module) => moduleRow(module, catalogById.get(module.id))).join("")}</ul>
+  </section>
+  <section class="sh-panel sh-more">
+    <header class="sh-panel-head sh-more-head">
+      <div><h2>${escape(text("more"))}</h2><p class="sh-hint">${escape(text("moreHint"))} ${escape(moreCount)}</p></div>
+      ${toggle}
+    </header>
+    ${moreBody}
+  </section>
+  <footer class="sh-footer">${link(GITHUB, text("allModules"))}${link(DISCORD, text("discord"))}</footer>`;
+}
+
+/* -------------------------------------------- */
+/*  Styles                                      */
+/* -------------------------------------------- */
+
+// Injected once. The rules are unlayered and outrank core, so every selector stays inside the window. Dark follows
+// Foundry, light uses the warm Signature look of the modules.
+const STYLES = `
+.sephrals-hub {
+  --sh-bg: #222026; --sh-panel: #2c2a31; --sh-row: #33313a; --sh-line: rgba(218, 197, 167, 0.16);
+  --sh-ink: #ece6da; --sh-muted: #b9b0a2; --sh-accent: #e8a27c; --sh-accent-ink: #1b1a1f;
+  --sh-accent-soft: rgba(232, 162, 124, 0.12); --sh-ok: #7fcf9f; --sh-warn: #f0c27a;
+  --sh-warn-soft: rgba(240, 194, 122, 0.12); --sh-radius: 6px; --sh-radius-small: 6px;
+}
+body.theme-light .sephrals-hub:not(.themed), .sephrals-hub.themed.theme-light {
+  --sh-bg: #f3ecde; --sh-panel: rgba(255, 250, 240, 0.8); --sh-row: #fffdf7; --sh-line: rgba(73, 49, 32, 0.14);
+  --sh-ink: #1f1a17; --sh-muted: #665c54; --sh-accent: #a8481f; --sh-accent-ink: #fffaf0;
+  --sh-accent-soft: rgba(168, 72, 31, 0.12); --sh-ok: #2d7753; --sh-warn: #8a5300;
+  --sh-warn-soft: rgba(176, 112, 0, 0.12); --sh-radius: 16px; --sh-radius-small: 12px;
+}
+.sephrals-hub .window-content {
+  display: flex; flex-direction: column; gap: 12px; padding: 14px; overflow-y: auto;
+  background: var(--sh-bg); color: var(--sh-ink); font-family: var(--font-primary, "Signika", sans-serif);
+}
+.sephrals-hub h2, .sephrals-hub h3 { margin: 0; padding: 0; border: 0; color: var(--sh-ink); font-family: inherit; }
+.sephrals-hub h2 { font-size: 17px; font-weight: 600; }
+.sephrals-hub h3 { margin-top: 6px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sh-accent); }
+.sephrals-hub p { margin: 0; }
+.sephrals-hub ul { margin: 0; padding: 0; list-style: none; }
+.sephrals-hub a { color: var(--sh-accent); text-decoration: none; }
+.sephrals-hub a:hover { text-decoration: underline; }
+.sephrals-hub .sh-hint { font-size: 13px; color: var(--sh-muted); }
+.sephrals-hub .sh-hero, .sephrals-hub .sh-panel {
+  background: var(--sh-panel); border: 1px solid var(--sh-line); border-radius: var(--sh-radius);
+}
+.sephrals-hub .sh-hero { display: flex; align-items: center; gap: 16px; padding: 16px 18px; flex: none; }
+.sephrals-hub .sh-hero-text { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.sephrals-hub .sh-hero h2 { font-size: 21px; font-weight: 700; }
+.sephrals-hub .sh-hero p { font-size: 14px; color: var(--sh-muted); }
+.sephrals-hub .sh-eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sh-accent); }
+.sephrals-hub .sh-hero-actions { display: flex; flex-direction: column; gap: 8px; }
+.sephrals-hub .sh-button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: auto; height: 36px; margin: 0;
+  padding: 0 14px; font: 500 14px var(--font-primary, "Signika", sans-serif); color: var(--sh-ink); background: var(--sh-row);
+  border: 1px solid var(--sh-line); border-radius: var(--sh-radius-small); cursor: pointer; white-space: nowrap;
+}
+.sephrals-hub .sh-button.sh-primary { color: var(--sh-accent-ink); background: var(--sh-accent); border-color: var(--sh-accent); }
+.sephrals-hub .sh-button:hover, .sephrals-hub .sh-icon:hover { border-color: var(--sh-accent); box-shadow: none; }
+.sephrals-hub .sh-banner {
+  display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; font-size: 14px; flex: none;
+  background: var(--sh-warn-soft); border: 1px solid var(--sh-warn); border-radius: var(--sh-radius-small);
+}
+.sephrals-hub .sh-banner i { color: var(--sh-warn); margin-top: 3px; }
+.sephrals-hub .sh-panel { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px 14px; flex: none; }
+.sephrals-hub .sh-panel-head { display: flex; align-items: baseline; gap: 10px; }
+.sephrals-hub .sh-more-head { align-items: center; justify-content: space-between; }
+.sephrals-hub .sh-rows { display: flex; flex-direction: column; gap: 8px; }
+.sephrals-hub .sh-row {
+  display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 14px;
+  background: var(--sh-row); border: 1px solid var(--sh-line); border-radius: var(--sh-radius-small);
+}
+.sephrals-hub .sh-row-main { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.sephrals-hub .sh-row-title { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 15px; }
+.sephrals-hub .sh-row-actions { display: flex; align-items: center; gap: 6px; }
+.sephrals-hub .sh-pill {
+  font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--sh-line); color: var(--sh-muted); white-space: nowrap;
+}
+.sephrals-hub .sh-pill.sh-on { color: var(--sh-ok); }
+.sephrals-hub .sh-pill.sh-accent { color: var(--sh-accent); background: var(--sh-accent-soft); }
+.sephrals-hub .sh-pill.sh-sys, .sephrals-hub .sh-pill.sh-lang { color: var(--sh-accent); background: transparent; border: 1px solid var(--sh-line); }
+.sephrals-hub .sh-lang-note { margin: 0 0 8px; }
+.sephrals-hub .sh-note { font-size: 13px; color: var(--sh-muted); }
+.sephrals-hub .sh-note.sh-ok i { color: var(--sh-ok); }
+.sephrals-hub .sh-note.sh-warn i { color: var(--sh-warn); }
+.sephrals-hub .sh-problems { font-size: 13px; color: var(--sh-muted); padding-left: 22px; list-style: disc; }
+.sephrals-hub .sh-icon {
+  display: inline-flex; align-items: center; justify-content: center; flex: none; width: 36px; height: 36px; margin: 0; padding: 0;
+  color: var(--sh-ink); background: transparent; border: 1px solid var(--sh-line); border-radius: var(--sh-radius-small); cursor: pointer;
+}
+.sephrals-hub a.sh-icon:hover { text-decoration: none; }
+.sephrals-hub .sh-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.sephrals-hub .sh-card {
+  display: flex; flex-direction: column; gap: 4px; padding: 10px 12px;
+  background: var(--sh-row); border: 1px solid var(--sh-line); border-radius: var(--sh-radius-small);
+}
+.sephrals-hub .sh-card-works { grid-column: 1 / -1; background: var(--sh-accent-soft); border-color: var(--sh-accent); }
+.sephrals-hub .sh-card p { flex: 1; font-size: 13px; color: var(--sh-muted); }
+.sephrals-hub .sh-card a { font-size: 13px; font-weight: 500; }
+.sephrals-hub .sh-card-links { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 16px; }
+/* The play buttons burn: a rising fire gradient, flickering tongues on top and a glow, calm for reduced motion */
+.sephrals-hub .sh-flame {
+  position: relative; overflow: hidden; isolation: isolate; color: #fff; border: 0;
+  background: linear-gradient(0deg, #b3170a 0%, #ff4d00 30%, #ff9a00 62%, #ffd84a 100%); background-size: 100% 220%;
+  text-shadow: 0 1px 2px rgba(90, 10, 0, 0.75);
+  animation: sh-burn 1.4s ease-in-out infinite alternate, sh-glow 1.4s ease-in-out infinite alternate;
+}
+.sephrals-hub .sh-flame::before {
+  content: ""; position: absolute; inset: -60% -20% -10%; z-index: -1; pointer-events: none; mix-blend-mode: screen;
+  background:
+    radial-gradient(ellipse 22% 55% at 18% 100%, rgba(255, 236, 140, 0.95), transparent 70%),
+    radial-gradient(ellipse 26% 70% at 50% 100%, rgba(255, 170, 40, 0.9), transparent 70%),
+    radial-gradient(ellipse 20% 50% at 82% 100%, rgba(255, 226, 120, 0.9), transparent 70%);
+  animation: sh-flicker 0.8s ease-in-out infinite alternate;
+}
+.sephrals-hub .sh-flame > * { position: relative; }
+.sephrals-hub .sh-flame:hover, .sephrals-hub .sh-flame:focus-visible { filter: brightness(1.15) saturate(1.15); box-shadow: 0 0 18px rgba(255, 140, 0, 0.95); }
+.sephrals-hub .sh-play {
+  display: inline-flex; align-items: center; gap: 8px; width: auto; height: 30px; margin: 0; padding: 0 14px 0 12px;
+  border-radius: 999px; font: 600 13px var(--font-primary, "Signika", sans-serif); cursor: pointer; white-space: nowrap;
+}
+.sephrals-hub .sh-icon.sh-flame { border-radius: 50%; }
+@keyframes sh-burn { from { background-position: 0 0; } to { background-position: 0 100%; } }
+@keyframes sh-flicker {
+  0% { transform: translate(0, 12%) scale(1, 0.9); opacity: 0.75; }
+  40% { transform: translate(-4%, -4%) scale(1.05, 1.15); opacity: 1; }
+  100% { transform: translate(4%, 6%) scale(0.95, 1); opacity: 0.85; }
+}
+@keyframes sh-glow { from { box-shadow: 0 0 5px rgba(255, 90, 0, 0.45); } to { box-shadow: 0 0 14px rgba(255, 150, 0, 0.9); } }
+@media (prefers-reduced-motion: reduce) {
+  .sephrals-hub .sh-flame, .sephrals-hub .sh-flame::before { animation: none; }
+}
+.sephrals-hub-video .window-content { gap: 8px; }
+.sephrals-hub .sh-video { display: block; width: 100%; aspect-ratio: 16 / 10; background: #000; border-radius: var(--sh-radius-small); }
+.sephrals-hub .sh-play.sh-get { color: var(--sh-accent-ink); background: var(--sh-accent); border: 1px solid var(--sh-accent); }
+.sephrals-hub .sh-play.sh-get:hover, .sephrals-hub .sh-play.sh-get:focus-visible { filter: brightness(1.1); box-shadow: none; }
+.sephrals-hub .sh-banner.sh-banner-new { background: var(--sh-accent-soft); border-color: var(--sh-accent); }
+.sephrals-hub .sh-banner.sh-banner-new i { color: var(--sh-accent); }
+.sephrals-hub .sh-row.sh-row-new { border-color: var(--sh-accent); box-shadow: 0 0 0 1px var(--sh-accent); }
+.sephrals-hub .sh-card.sh-card-focus { border-color: var(--sh-accent); box-shadow: 0 0 0 1px var(--sh-accent); }
+.sephrals-hub-install .window-content { gap: 14px; }
+.sephrals-hub .sh-lead { font-size: 15px; line-height: 1.45; }
+.sephrals-hub .sh-link { display: flex; align-items: center; gap: 8px; }
+.sephrals-hub .sh-link input {
+  flex: 1; min-width: 0; height: 36px; margin: 0; padding: 0 10px; font: 13px var(--font-monospace, monospace); color: var(--sh-ink);
+  background: var(--sh-row); border: 1px solid var(--sh-line); border-radius: var(--sh-radius-small);
+}
+.sephrals-hub .sh-steps { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; counter-reset: sh-step; }
+.sephrals-hub .sh-steps li { position: relative; min-height: 24px; padding-left: 34px; font-size: 14px; line-height: 1.45; counter-increment: sh-step; }
+.sephrals-hub .sh-steps li::before {
+  content: counter(sh-step); position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 24px; height: 24px;
+  font-size: 13px; font-weight: 700; color: var(--sh-accent-ink); background: var(--sh-accent); border-radius: 50%;
+}
+.sephrals-hub .sh-clip { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.sephrals-hub .sh-clip .sh-video { aspect-ratio: 1280 / 876; }
+.sephrals-hub .sh-install-foot { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding-top: 12px; border-top: 1px solid var(--sh-line); }
+.sephrals-hub a.sh-button:hover { text-decoration: none; }
+.sephrals-hub .sh-footer { display: flex; justify-content: flex-end; gap: 16px; padding: 0 4px; font-size: 13px; flex: none; }
+`;
+
+function ensureStyles() {
+  if (document.getElementById(STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = STYLE_ID;
+  style.textContent = STYLES;
+  document.head.appendChild(style);
+}

@@ -1,0 +1,409 @@
+{
+  "STL": {
+    "LANGUAGE": {
+      "default": "Like Foundry",
+      "de": "Deutsch",
+      "en": "English"
+    },
+    "SETTINGS": {
+      "uiLanguage": {
+        "name": "Module language",
+        "hint": "Language of Translator on this device. \"Like Foundry\" follows Foundry's language."
+      },
+      "theme": {
+        "name": "Look",
+        "hint": "Signature shows the windows on warm paper, Foundry keeps them dark like the rest of Foundry.",
+        "signature": "Signature (paper)",
+        "foundry": "Foundry (dark)"
+      }
+    },
+    "gear": "Settings",
+    "SELFTEST": {
+      "Title": "Self test",
+      "Run": "Run self test",
+      "Hint": "Checks after an update that everything the module relies on is there.",
+      "Passed": "Self test passed: {checks} checks.",
+      "Problems": "Self test: {problems} problems in {checks} checks.",
+      "Version": "Foundry {current}, verified with {tested}.",
+      "NewVersions": "Foundry is newer than the verified version ({versions}). Run the self test if something looks wrong.",
+      "Dialog": "Foundry's dialogs are missing.",
+      "Texts": "Missing texts: {keys}",
+      "Handlebars": "Foundry's template support is missing.",
+      "Save": "Foundry cannot save a file for download.",
+      "Checks": "The translation checks do not work as expected.",
+      "Hash": "The text fingerprint does not work.",
+      "Merge": "The safe merge of texts does not work.",
+      "Language": "The language code check does not work.",
+      "OwnFile": "The module's own language file cannot be read.",
+      "Modules": "No module to translate was found.",
+      "Storage": "The draft storage is not registered."
+    },
+    "DEBUG": {
+      "Title": "Debug file",
+      "Save": "Save debug file",
+      "Hint": "One file about all of Sephral's modules in this world, for bug reports. It contains chat text and whispers.",
+      "Entry": "Translator",
+      "Saved": "Debug file saved: {file}. It contains chat text and whispers, check it before you share it."
+    },
+    "Title": "Translator",
+    "MENU": {
+      "Title": "Translator",
+      "Open": "Open translator",
+      "Hint": "Translate a Sephral module into your language and see every word at once in the real windows. Every player can open it."
+    },
+    "Window": {
+      "module": "Module",
+      "language": "Language",
+      "langPlaceholder": "Language code, for example pt-BR",
+      "langPick": "Choose a language...",
+      "langOther": "Other language...",
+      "langOtherLabel": "Code of another language",
+      "langTitle": "✓ means this module already comes with the language. Missing yours? Pick Other language... and type its code.",
+      "filters": "Filter by status",
+      "search": "Search texts",
+      "group": "Group",
+      "allGroups": "All groups",
+      "noGroup": "(general)",
+      "keys": "Texts of the module",
+      "pick": "Pick a text on the left to translate it.",
+      "noMatch": "No text matches.",
+      "import": "Import",
+      "export": "Export",
+      "submit": "Submit...",
+      "progress": "{done} of {total} words translated ({percent}%)",
+      "saved": "Draft saved {time}",
+      "use": "Use",
+      "review": "Review a submission...",
+      "pickScreen": "Pick a text on screen: click this, then click a text in any window of the module",
+      "reviewHint": "For reviewers: open a submitted translation file and check it in the real windows",
+      "importHint": "Load a language file, a submission or a review file (or drop it on this window)",
+      "exportHint": "Save your translation as a language file for Foundry",
+      "submitHint": "Send your translation to Sephral through Discord or GitHub",
+      "samples": "Sample windows",
+      "samplesPick": "Show a sample window...",
+      "samplesHint": "Windows of this module filled with made-up data, so every text can be seen in its place. Nothing in them is saved."
+    },
+    "Guide": {
+      "head": "How it works:",
+      "pick": "Pick a text on the left, or press the crosshair next to the search and click a text in a window of the module.",
+      "type": "Type your translation. The module shows it at once, in every window.",
+      "next": "Ctrl+Enter takes you to the next text that still needs work. Your draft saves itself.",
+      "submit": "Done, or done for today? Submit sends what you have through Discord or GitHub."
+    },
+    "Status": {
+      "all": "All",
+      "ok": "Done",
+      "open": "Open",
+      "check": "To check",
+      "changed": "English changed",
+      "warning": "Warning",
+      "error": "Error",
+      "since": "Changed since submitted",
+      "notes": "Review notes"
+    },
+    "Message": {
+      "pickLanguage": "Choose the language you translate into above.",
+      "notEnglish": "English is the source language. Type the code of the language you translate into.",
+      "badLanguage": "That is not a language code. Use letters, and add a region like pt-BR if you want."
+    },
+    "Detail": {
+      "group": "Group {group}",
+      "recommended": "about {count} characters",
+      "english": "English",
+      "german": "German, for orientation",
+      "yours": "Your translation",
+      "placeholders": "Placeholders",
+      "insert": "Insert {name} at the cursor",
+      "markCheck": "Mark this text to check it again later",
+      "checks": "Checks",
+      "nothingYet": "Nothing typed yet. The window shows the English text.",
+      "allGood": "All checks passed.",
+      "notInPreview": "The preview skips this text until the error is fixed.",
+      "englishChanged": "The English text changed after you translated it.",
+      "oldEnglish": "English then",
+      "newEnglish": "English now",
+      "keepTranslation": "My translation still fits",
+      "preview": "Preview",
+      "show": "Show this text",
+      "openWindow": "Open window",
+      "openSettings": "Open settings",
+      "sent": "Submitted on {date}",
+      "notSent": "(not part of that submission)",
+      "note": {
+        "change": "Review by {name}: needs a change",
+        "ok": "Review by {name}: OK, with a remark",
+        "take": "Take the suggestion",
+        "done": "Done"
+      },
+      "next": "Next open text",
+      "nextKeys": "Ctrl+Enter, Alt+arrow keys for the list",
+      "simulate": "Show an example",
+      "code": "Show the code",
+      "codeHide": "Hide the code"
+    },
+    "Memory": {
+      "title": "Already translated elsewhere",
+      "take": "Use",
+      "thisModule": "this module",
+      "same": "{count} more texts here have the same English and no translation yet.",
+      "sameOne": "1 more text here has the same English and no translation yet.",
+      "fill": "Use there too"
+    },
+    "Pick": {
+      "start": "Click a text of {module} in any window. Escape stops.",
+      "none": "That text is not part of {module}. Pick a text of this module, or choose its module above.",
+      "several": "{count} texts have these words. The first one is selected, the others can take the same translation."
+    },
+    "Hint": {
+      "length": "{length} characters, English has {recommended}",
+      "plural": "This text contains a count (a number). Word it so it reads right for one and for many, or use a form that works for every number."
+    },
+    "State": {
+      "live": "Live",
+      "map": "Live on the map",
+      "open": "Open to see",
+      "reload": "After reload",
+      "liveHint": "This text is on screen now and changes while you type.",
+      "mapHint": "The module draws this text on the map. It changes there while you type, wherever the map shows it.",
+      "openHint": "Not on screen right now. Open window looks for the window that shows it and outlines the place.",
+      "settingHint": "This text is in Foundry's settings, on the tab of this module. Open settings shows the place.",
+      "searching": "Looking for the window that shows this text...",
+      "inSettings": "The settings of the module are open, the place is outlined.",
+      "openedHidden": "The window is open, but the text is in a part that is not visible right now.",
+      "reloadHint": "Foundry reads this text only at start. You see your version after you reload the page.",
+      "shown": "Outlined in {count} places on screen.",
+      "shownOne": "Outlined in 1 place on screen.",
+      "notShown": "This text is not on screen right now."
+    },
+    "Where": {
+      "notify": "This text is a notice at the top of the screen. It shows when the situation comes up, then with your text.",
+      "chat": "This text is part of a chat message of the module. New messages show your text.",
+      "dialog": "This text is in a question the module asks during an action. It shows when you start that action.",
+      "player": "This text is in a window only players see. Log in as a player to see it.",
+      "window": "This text is in a window the module opens only in certain situations, for example after an action.",
+      "unknown": "No window shows this text on its own. It appears when the module needs it, for example after an action.",
+      "gmSetting": "This text is in a setting only the gamemaster can see."
+    },
+    "Simulate": {
+      "notifyHint": "This text is a notification at the top of the screen. Show an example brings it up with your text, placeholders with sample values.",
+      "chatHint": "This text belongs to a chat message of the module. Show an example puts such a message with your text into your chat, only for you and never saved.",
+      "dialogHint": "This text is in a question the module asks. Show an example opens such a question with your text.",
+      "shown": "The example is shown, only in your browser.",
+      "failed": "The example could not be shown.",
+      "chatTitle": "Example of a chat message"
+    },
+    "Samples": {
+      "opened": "Sample window opened: {name}. The data is made up and nothing in it is saved.",
+      "failed": "The sample window could not be opened.",
+      "shown": "A sample window with made-up data shows this text, outlined in {count} places.",
+      "shownOne": "A sample window with made-up data shows this text, outlined in 1 place.",
+      "chatHint": "This text belongs to a chat message. Open window shows it in a sample window of the module, with made-up data.",
+      "labelHint": "This text names a sample window of the module. You see it in the field Sample windows at the top.",
+      "opening": "Opening the sample window: {name}..."
+    },
+    "Needs": {
+      "system": "the game system {name}",
+      "module": "the module {name}",
+      "and": " and ",
+      "short": "needs {needs}",
+      "notice": "{module} needs {needs}, and this world does not have it. Its windows do not open here, so you cannot see the texts in their place or open sample windows. You can still translate every text and hand it in. To see the texts, open the translator in a world that has it.",
+      "hint": "This module shows no window in this world (it needs {needs}). Show the code tells you where the text is used.",
+      "elsewhere": "Only in another world (open the translator there)"
+    },
+    "Code": {
+      "hint": "This is where the module uses the text. The marked line holds the key, the lines around it show what it is for.",
+      "none": "The key is not written out in the code of the module, it is put together from parts."
+    },
+    "Check": {
+      "not-string": "Not a text",
+      "too-long": "Text is too long",
+      "placeholder-mismatch": "Placeholders differ from English",
+      "tag-mismatch": "HTML tags differ from English",
+      "tag-attributes": "HTML tag attributes differ from English",
+      "angle-brackets": "HTML is not allowed here",
+      "entity-mismatch": "HTML character codes differ from English",
+      "handlebars-mismatch": "Double curly braces differ from English",
+      "enricher-mismatch": "Foundry links differ from English",
+      "url-not-in-english": "Web address not in the English text",
+      "control-char": "Control character",
+      "bidi-override": "Hidden text direction mark",
+      "zero-width-char": "Invisible character",
+      "unknown-key": "Key is not in the English file",
+      "not-object": "Not a language file",
+      "empty": "Empty",
+      "identical-to-english": "Same as English",
+      "length-long": "Much longer than English",
+      "length-short": "Much shorter than English",
+      "edge-space": "Space at the start or end differs from English",
+      "script-mismatch": "The alphabet does not fit the language",
+      "punctuation": "Semicolon or dash found",
+      "not-nfc": "Characters are not in standard form (NFC)"
+    },
+    "CheckDetail": {
+      "none": "none",
+      "too-long": "At most {max} characters.",
+      "placeholder-mismatch": "Missing: {missing}. Unknown: {extra}.",
+      "tag-mismatch": "English: {english}. Yours: {translation}.",
+      "entity-mismatch": "Missing: {missing}. Unknown: {extra}.",
+      "enricher-mismatch": "Missing: {missing}. Unknown: {extra}.",
+      "url-not-in-english": "Found: {found}.",
+      "punctuation": "Found: {found}."
+    },
+    "Report": {
+      "preloaded": "The module already ships this language. {count} texts are loaded as your starting point.",
+      "preloadedOne": "The module already ships this language. 1 text is loaded as your starting point.",
+      "exported": "Exported {count} texts as {file}.",
+      "exportedOne": "Exported 1 text as {file}.",
+      "skipped": "{count} texts with errors were left out:",
+      "skippedOne": "1 text with errors was left out:",
+      "imported": "Texts imported: {accepted}, rejected: {rejected}.",
+      "unknown": "{count} keys are not in this module and were ignored.",
+      "unknownOne": "1 key is not in this module and was ignored.",
+      "skippedOther": "{count} unusable entries were ignored.",
+      "skippedOtherOne": "1 unusable entry was ignored.",
+      "reject": {
+        "not-text": "The file could not be read.",
+        "too-big": "The file is too big.",
+        "bad-json": "The file is not valid JSON.",
+        "not-object": "The file is not a language file.",
+        "other-module": "This submission file belongs to another module.",
+        "not-review": "This is not a review file.",
+        "other-language": "This review is for another language."
+      },
+      "reviewImported": "Review by {reviewer} imported. Notes: {count}, asking for a change: {change}. The filter \"Review notes\" lists them.",
+      "nothingLeft": "No text of this module needs work right now.",
+      "allDone": "Every text of this module is translated. Thank you! Submit sends it to us.",
+      "filled": "Used for {count} more texts with the same English.",
+      "filledOne": "Used for 1 more text with the same English."
+    },
+    "Submit": {
+      "title": "Submit translation",
+      "intro": "Submit your translation on Sephral’s Discord server in {channel} or as an issue on GitHub. Translator sends nothing itself. It saves a file and prepares your message, and you attach the file there. On Discord you can ask questions right away.",
+      "links": "Open directly:",
+      "linkDiscord": "Sephral’s Discord",
+      "linkGithub": "Issues of the module on GitHub",
+      "summary": "{keys} texts, {words} English words, {module} into {lang}",
+      "summaryOne": "1 text, {words} English words, {module} into {lang}",
+      "nothing": "There is no finished translation yet.",
+      "errors": "{count} texts still have errors. Fix them first.",
+      "errorsOne": "1 text still has errors. Fix it first.",
+      "attest": "I translated every text myself by hand, or together with people who did, and I speak the language well enough to stand behind it. No machine translation and no AI was used, not even as a draft.",
+      "license": "Sephral may publish and adapt my translation with the modules under the module license. I get no money for it. My name is only shown if I give it, and I can ask to have it removed. Once published, the translation cannot be taken back, and a name in the Git history stays there.",
+      "name": "Name for the credits",
+      "namePlaceholder": "Your name or nickname",
+      "creditTitle": "Credits",
+      "creditNamed": "Credit me as",
+      "creditAnonymous": "Keep me anonymous, my name appears nowhere",
+      "missing": "Still missing: {list}.",
+      "missingParts": {
+        "attest": "the tick for translated by hand",
+        "license": "the tick for the licence",
+        "credit": "your choice for the credits",
+        "name": "the name for the credits"
+      },
+      "note": "Note (optional)",
+      "privacy": "The file holds your texts and, if you give it, your name and note. What you post on Discord or GitHub can be seen there by others. To change or withdraw a submission, write in the channel or the issue.",
+      "cancel": "Cancel",
+      "close": "Close",
+      "field": {
+        "too-long": "{field} is too long.",
+        "line-break": "{field} must not contain a line break.",
+        "url": "{field} must not contain a web address."
+      },
+      "copy": "Copy text",
+      "unchanged": "Nothing changed since your last submission.",
+      "history": "Your submissions",
+      "historyHint": "Kept only in this browser. To change or withdraw one, write in the Discord channel or the issue.",
+      "entry": "{count} texts, module version {version}",
+      "entryOne": "1 text, module version {version}",
+      "save": "Save as file",
+      "viaDiscord": "Submit on Discord",
+      "viaGithub": "Submit on GitHub",
+      "message": "Text of your message",
+      "copied": "The text is copied, paste it with Ctrl+V.",
+      "copyByHand": "The browser did not allow copying. The text is selected, copy it with Ctrl+C.",
+      "via": {
+        "discord": "on Discord",
+        "github": "on GitHub"
+      },
+      "reopen": {
+        "discord": "Open Discord again",
+        "github": "Open the issue page again"
+      },
+      "steps": {
+        "discordHead": "Almost done, three steps on Discord:",
+        "githubHead": "Almost done, two steps on GitHub:",
+        "saved": "The file was saved as {file} (in your downloads).",
+        "discordOpen": "Discord is open in a new tab. Join the server if you have not yet. The first time, confirm the rules in #start-here with ✅ and pick your language in #pick-your-languages. Then open {channel}.",
+        "discordPost": "Drag {file} into the channel and paste the text with Ctrl+V. It is copied already.",
+        "githubOpen": "The page for a new issue opened in a new tab, the text is filled in already.",
+        "githubAttach": "Drag {file} into the text box of the issue and click Create."
+      },
+      "msg": {
+        "head": "Translation of {module} ({id} {version}) into {lang}: {count} texts.",
+        "headOne": "Translation of {module} ({id} {version}) into {lang}: 1 text.",
+        "file": "File: {file}",
+        "name": "Credit as: {name}",
+        "note": "Note: {note}",
+        "anonymous": "Credit: anonymous"
+      },
+      "rule": "Translate by hand only: machine translation and AI tools are not allowed, not even for a draft (Foundry VTT policy on AI generated content).",
+      "openHint": "Did no tab open? Use this link:"
+    },
+    "Use": {
+      "preview": "Only while this window is open",
+      "me": "Always, in my Foundry",
+      "world": "For everyone in this world",
+      "previewHint": "Your texts show while the translator is open. When you close it, the module shows its usual texts again.",
+      "meHint": "Your translation stays in this browser, also after a reload. Only you see it. Texts with errors are left out.",
+      "worldHint": "Everyone in this world sees your translation in every window opened from now on, and everywhere after a reload. Players who picked a fixed language for this module keep it. Later changes are shared when you close the translator.",
+      "worldByGM": "The GM shares this translation with everyone in this world. Pick \"Always, in my Foundry\" to use your own instead."
+    },
+    "Review": {
+      "title": "Review a translation",
+      "rule": "Read and judge by yourself: no machine translation and no AI tools, neither to check nor to rewrite a text.",
+      "hint": "While this window is open, the submitted texts show in the real windows of the module. Mark every text OK or Needs change and suggest a better wording where needed. OK moves on to the next text that is not reviewed yet.",
+      "head": "{module} {version} into {lang}, translated by {translator}, {count} texts",
+      "headOne": "{module} {version} into {lang}, translated by {translator}, 1 text",
+      "anonymous": "someone who gave no name",
+      "anonymousReviewer": "someone from the review team",
+      "filters": "Filter by status",
+      "search": "Search texts",
+      "keys": "Texts of the submission",
+      "pick": "Pick a text on the left to review it.",
+      "status": {
+        "all": "All",
+        "open": "To review",
+        "ok": "OK",
+        "change": "Needs change"
+      },
+      "submitted": "Submitted translation",
+      "ok": "OK",
+      "change": "Needs change",
+      "suggestion": "Better wording (optional)",
+      "comment": "Remark for the translator (optional)",
+      "progress": "{done} of {total} texts reviewed",
+      "reviewer": "Your name for the credits",
+      "copy": "Copy text for the post",
+      "save": "Save review file",
+      "copied": "Copied. Paste it in the post of this translation in #review-queue and attach the review file.",
+      "copyByHand": "The browser did not allow copying. The text is selected below, copy it with Ctrl+C.",
+      "saved": "The review file was saved as {file} (in your downloads). Attach it to the post in #review-queue.",
+      "noModule": "This submission is for {module}, which is not active in this world. Enable it and open the file again.",
+      "reject": {
+        "not-submission": "This is not a submission file of Sephral’s Translator.",
+        "bad-language": "The submission names no valid language.",
+        "no-texts": "The file contains no texts of this module."
+      },
+      "msg": {
+        "head": "Review of {module} {version} ({lang}) by {reviewer}. OK: {ok}, to change: {change}, not reviewed yet: {open}.",
+        "approved": "Approved: every text is fine.",
+        "changes": "Please change these texts:",
+        "partial": "Not finished yet. So far these texts need a change:",
+        "more": "{count} more in the review file.",
+        "moreOne": "1 more in the review file.",
+        "file": "All notes are in the attached review file. The translator imports it with Import."
+      }
+    }
+  }
+}

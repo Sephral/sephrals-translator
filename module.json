@@ -1,0 +1,35 @@
+{
+  "id": "sephrals-translator",
+  "title": "Sephral’s Translator",
+  "description": "Translate Sephral modules into your language and see every word live in the real windows while you type. Check, export and submit your translation.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": 13,
+    "verified": "14.370"
+  },
+  "authors": [
+    {
+      "name": "Sephral",
+      "url": "https://github.com/Sephral"
+    }
+  ],
+  "url": "https://github.com/Sephral/sephrals-translator.git",
+  "esmodules": [
+    "scripts/stl.mjs"
+  ],
+  "styles": [
+    "styles/stl.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "de",
+      "name": "Deutsch",
+      "path": "lang/de.json"
+    }
+  ]
+}

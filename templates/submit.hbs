@@ -1,0 +1,72 @@
+<div class="stl-shell stl-submit">
+  <p class="stl-intro">{{text.intro}}</p>
+  <p class="stl-links">
+    <span>{{text.links}}</span>
+    <a class="stl-link-discord" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-discord" inert></i> {{text.linkDiscord}}</a>
+    <a class="stl-link-github" target="_blank" rel="noopener noreferrer" hidden><i class="fa-brands fa-github" inert></i> {{text.linkGithub}}</a>
+  </p>
+  <p class="stl-rule">{{text.rule}}</p>
+
+  <form class="stl-form" autocomplete="off">
+    <p class="stl-summary"></p>
+    <ul class="stl-problems" hidden></ul>
+    <p class="stl-hint-line" hidden></p>
+    <label class="stl-check">
+      <input type="checkbox" name="attestReviewed">
+      <span>{{text.attest}}</span>
+    </label>
+    <label class="stl-check">
+      <input type="checkbox" name="attestLicense">
+      <span>{{text.license}}</span>
+    </label>
+    <fieldset class="stl-credit">
+      <legend>{{text.creditTitle}}</legend>
+      <label class="stl-credit-row">
+        <input type="radio" name="credit" value="named">
+        <span>{{text.creditNamed}}</span>
+        <input type="text" name="name" maxlength="60" placeholder="{{text.namePlaceholder}}" aria-label="{{text.name}}">
+      </label>
+      <label class="stl-credit-row">
+        <input type="radio" name="credit" value="anonymous">
+        <span>{{text.creditAnonymous}}</span>
+      </label>
+    </fieldset>
+    <label class="stl-field">
+      <span>{{text.note}}</span>
+      <textarea name="note" rows="2" maxlength="500"></textarea>
+    </label>
+    <p class="stl-fielderror" role="alert" hidden></p>
+    <p class="stl-privacy">{{text.privacy}}</p>
+    <p class="stl-missing" role="status" hidden></p>
+    <div class="stl-buttons">
+      <button type="button" data-stl="cancel">{{text.cancel}}</button>
+      <button type="button" data-stl="via-github" class="stl-primary" disabled><i class="fa-brands fa-github" inert></i> {{text.viaGithub}}</button>
+      <button type="button" data-stl="via-discord" class="stl-primary" disabled><i class="fa-brands fa-discord" inert></i> {{text.viaDiscord}}</button>
+    </div>
+  </form>
+
+  <section class="stl-steps" hidden>
+    <p class="stl-steps-head"></p>
+    <ol class="stl-steps-list"></ol>
+    <p class="stl-open-line">
+      <span class="stl-open-hint"></span>
+      <a class="stl-open-link" target="_blank" rel="noopener noreferrer"></a>
+    </p>
+    <label class="stl-field">
+      <span>{{text.message}}</span>
+      <textarea name="message" rows="6" readonly></textarea>
+    </label>
+    <div class="stl-buttons">
+      <button type="button" data-stl="copy"><i class="fa-solid fa-copy" inert></i> {{text.copy}}</button>
+      <a class="stl-button-link" data-stl="reopen" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square" inert></i> <span class="stl-reopen-label"></span></a>
+      <button type="button" data-stl="cancel">{{text.close}}</button>
+    </div>
+  </section>
+
+  <section class="stl-history" hidden>
+    <h3>{{text.history}}</h3>
+    <p class="stl-history-hint">{{text.historyHint}}</p>
+    <p class="stl-history-msg" role="status" hidden></p>
+    <ul class="stl-history-list"></ul>
+  </section>
+</div>

@@ -1,0 +1,56 @@
+<div class="stl-shell">
+  <header class="stl-top">
+    <label class="stl-field stl-field-module">
+      <span>{{text.module}}</span>
+      <select name="module" aria-label="{{text.module}}"></select>
+    </label>
+    <label class="stl-field stl-field-lang">
+      <span>{{text.language}}</span>
+      <span class="stl-langpick">
+        <select name="lang" aria-label="{{text.language}}" title="{{text.langTitle}}"></select>
+        <input name="langOther" type="text" maxlength="10" autocomplete="off" spellcheck="false" hidden
+          placeholder="{{text.langPlaceholder}}" aria-label="{{text.langOtherLabel}}">
+      </span>
+    </label>
+    <label class="stl-field stl-field-samples" hidden>
+      <span>{{text.samples}}</span>
+      <select name="sample" aria-label="{{text.samples}}" title="{{text.samplesHint}}"></select>
+    </label>
+    <div class="stl-progress" role="status">
+      <div class="stl-bar" aria-hidden="true"><span></span></div>
+      <span class="stl-progress-text"></span>
+      <span class="stl-saved"></span>
+    </div>
+  </header>
+  <p class="stl-langmsg" role="alert" hidden></p>
+  <p class="stl-needs" role="note" hidden></p>
+  <div class="stl-main">
+    <aside class="stl-listpane">
+      <div class="stl-filters" role="group" aria-label="{{text.filters}}"></div>
+      <div class="stl-search">
+        <input type="search" name="query" placeholder="{{text.search}}" aria-label="{{text.search}}">
+        <button type="button" class="stl-pick" data-stl="pick" aria-pressed="false" title="{{text.pickScreen}}" aria-label="{{text.pickScreen}}"><i class="fa-solid fa-crosshairs" inert></i></button>
+        <select name="group" aria-label="{{text.group}}"></select>
+      </div>
+      <ul class="stl-list" role="listbox" aria-label="{{text.keys}}"></ul>
+    </aside>
+    <section class="stl-detail" aria-live="polite">
+      <p class="stl-empty">{{text.pick}}</p>
+    </section>
+  </div>
+  <div class="stl-report" role="status" hidden></div>
+  <footer class="stl-foot">
+    <label class="stl-use">
+      <span>{{text.use}}</span>
+      <select name="use" aria-label="{{text.use}}"></select>
+    </label>
+    <div class="stl-foot-actions">
+    <button type="button" data-stl="review" title="{{text.reviewHint}}"><i class="fa-solid fa-clipboard-check" inert></i> {{text.review}}</button>
+    <button type="button" data-stl="import" title="{{text.importHint}}"><i class="fa-solid fa-file-import" inert></i> {{text.import}}</button>
+    <button type="button" data-stl="export" title="{{text.exportHint}}"><i class="fa-solid fa-file-export" inert></i> {{text.export}}</button>
+    <button type="button" data-stl="submit" class="stl-primary" title="{{text.submitHint}}"><i class="fa-solid fa-paper-plane" inert></i> {{text.submit}}</button>
+    </div>
+    <input type="file" name="file" accept=".json,application/json" hidden>
+    <input type="file" name="reviewFile" accept=".json,application/json" hidden>
+  </footer>
+</div>

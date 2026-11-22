@@ -1,0 +1,409 @@
+{
+  "STL": {
+    "LANGUAGE": {
+      "default": "Wie Foundry",
+      "de": "Deutsch",
+      "en": "English"
+    },
+    "SETTINGS": {
+      "uiLanguage": {
+        "name": "Modulsprache",
+        "hint": "Sprache von Translator auf diesem Gerät. \"Wie Foundry\" folgt der Sprache von Foundry."
+      },
+      "theme": {
+        "name": "Aussehen",
+        "hint": "Signature zeigt die Fenster auf warmem Papier, Foundry lässt sie dunkel wie den Rest von Foundry.",
+        "signature": "Signature (Papier)",
+        "foundry": "Foundry (dunkel)"
+      }
+    },
+    "gear": "Einstellungen",
+    "SELFTEST": {
+      "Title": "Selbsttest",
+      "Run": "Selbsttest starten",
+      "Hint": "Prüft nach einem Update, ob alles da ist, worauf das Modul baut.",
+      "Passed": "Selbsttest bestanden: {checks} Prüfungen.",
+      "Problems": "Selbsttest: {problems} Probleme bei {checks} Prüfungen.",
+      "Version": "Foundry {current}, geprüft mit {tested}.",
+      "NewVersions": "Foundry ist neuer als die geprüfte Version ({versions}). Starte den Selbsttest, wenn etwas nicht mehr passt.",
+      "Dialog": "Foundrys Dialoge fehlen.",
+      "Texts": "Texte fehlen: {keys}",
+      "Handlebars": "Foundrys Template-Unterstützung fehlt.",
+      "Save": "Foundry kann keine Datei zum Herunterladen speichern.",
+      "Checks": "Die Übersetzungsprüfungen arbeiten nicht wie erwartet.",
+      "Hash": "Der Text-Fingerabdruck funktioniert nicht.",
+      "Merge": "Das sichere Zusammenführen von Texten funktioniert nicht.",
+      "Language": "Die Prüfung des Sprachcodes funktioniert nicht.",
+      "OwnFile": "Die eigene Sprachdatei des Moduls lässt sich nicht lesen.",
+      "Modules": "Es wurde kein Modul zum Übersetzen gefunden.",
+      "Storage": "Der Entwurfsspeicher ist nicht registriert."
+    },
+    "DEBUG": {
+      "Title": "Debug-Datei",
+      "Save": "Debug-Datei speichern",
+      "Hint": "Eine Datei über alle Module von Sephral in dieser Welt, für Fehlerberichte. Sie enthält Chattexte und Geflüster.",
+      "Entry": "Translator",
+      "Saved": "Debug-Datei gespeichert: {file}. Sie enthält Chattexte und Geflüster, prüfe sie vor dem Teilen."
+    },
+    "Title": "Übersetzer",
+    "MENU": {
+      "Title": "Übersetzer",
+      "Open": "Übersetzer öffnen",
+      "Hint": "Übersetze ein Sephral-Modul in deine Sprache und sieh jedes Wort sofort in den echten Fenstern. Jeder Spieler kann es öffnen."
+    },
+    "Window": {
+      "module": "Modul",
+      "language": "Sprache",
+      "langPlaceholder": "Sprachcode, zum Beispiel pt-BR",
+      "langPick": "Sprache wählen...",
+      "langOther": "Andere Sprache...",
+      "langOtherLabel": "Code einer anderen Sprache",
+      "langTitle": "✓ heißt: Dieses Modul bringt die Sprache schon mit. Fehlt deine Sprache, wähle „Andere Sprache...“ und gib ihren Code ein.",
+      "filters": "Nach Status filtern",
+      "search": "Texte suchen",
+      "group": "Gruppe",
+      "allGroups": "Alle Gruppen",
+      "noGroup": "(allgemein)",
+      "keys": "Texte des Moduls",
+      "pick": "Wähle links einen Text, um ihn zu übersetzen.",
+      "noMatch": "Kein Text passt.",
+      "import": "Importieren",
+      "export": "Exportieren",
+      "submit": "Einreichen...",
+      "progress": "{done} von {total} Wörtern übersetzt ({percent}%)",
+      "saved": "Entwurf gespeichert {time}",
+      "use": "Verwenden",
+      "review": "Einreichung prüfen...",
+      "pickScreen": "Text auf dem Bildschirm wählen: hier klicken, dann auf einen Text in einem Fenster des Moduls",
+      "reviewHint": "Für Prüfer: eine eingereichte Übersetzung öffnen und in den echten Fenstern prüfen",
+      "importHint": "Sprachdatei, Einreichung oder Prüfdatei laden (oder einfach ins Fenster ziehen)",
+      "exportHint": "Deine Übersetzung als Sprachdatei für Foundry speichern",
+      "submitHint": "Deine Übersetzung über Discord oder GitHub an Sephral schicken",
+      "samples": "Beispielfenster",
+      "samplesPick": "Beispielfenster zeigen...",
+      "samplesHint": "Fenster dieses Moduls mit ausgedachten Daten, damit jeder Text an seinem Platz zu sehen ist. Darin wird nichts gespeichert."
+    },
+    "Guide": {
+      "head": "So geht's:",
+      "pick": "Wähle links einen Text, oder klicke auf das Fadenkreuz neben der Suche und dann auf einen Text in einem Fenster des Moduls.",
+      "type": "Tippe deine Übersetzung. Das Modul zeigt sie sofort, in jedem Fenster.",
+      "next": "Strg+Enter springt zum nächsten Text, der noch Arbeit braucht. Dein Entwurf speichert sich von selbst.",
+      "submit": "Fertig, oder für heute fertig? „Einreichen...“ schickt, was du hast, über Discord oder GitHub."
+    },
+    "Status": {
+      "all": "Alle",
+      "ok": "Fertig",
+      "open": "Offen",
+      "check": "Prüfen",
+      "changed": "Englisch geändert",
+      "warning": "Warnung",
+      "error": "Fehler",
+      "since": "Seit dem Einreichen geändert",
+      "notes": "Prüfnotizen"
+    },
+    "Message": {
+      "pickLanguage": "Wähle oben die Sprache, in die du übersetzt.",
+      "notEnglish": "Englisch ist die Ausgangssprache. Gib den Code der Zielsprache ein.",
+      "badLanguage": "Das ist kein Sprachcode. Nimm Buchstaben, auf Wunsch mit einer Region wie pt-BR."
+    },
+    "Detail": {
+      "group": "Gruppe {group}",
+      "recommended": "etwa {count} Zeichen",
+      "english": "Englisch",
+      "german": "Deutsch, zur Orientierung",
+      "yours": "Deine Übersetzung",
+      "placeholders": "Platzhalter",
+      "insert": "{name} an der Cursorposition einfügen",
+      "markCheck": "Diesen Text zum späteren Prüfen vormerken",
+      "checks": "Prüfungen",
+      "nothingYet": "Noch nichts eingegeben. Das Fenster zeigt den englischen Text.",
+      "allGood": "Alle Prüfungen bestanden.",
+      "notInPreview": "Die Vorschau zeigt diesen Text erst, wenn der Fehler behoben ist.",
+      "englishChanged": "Der englische Text hat sich geändert, nachdem du übersetzt hast.",
+      "oldEnglish": "Englisch damals",
+      "newEnglish": "Englisch jetzt",
+      "keepTranslation": "Meine Übersetzung passt weiterhin",
+      "preview": "Vorschau",
+      "show": "Diesen Text zeigen",
+      "openWindow": "Fenster öffnen",
+      "openSettings": "Einstellungen öffnen",
+      "sent": "Eingereicht am {date}",
+      "notSent": "(war nicht dabei)",
+      "note": {
+        "change": "Prüfung von {name}: bitte ändern",
+        "ok": "Prüfung von {name}: passt, mit einer Anmerkung",
+        "take": "Vorschlag übernehmen",
+        "done": "Erledigt"
+      },
+      "next": "Nächster offener Text",
+      "nextKeys": "Strg+Enter, Alt+Pfeiltasten für die Liste",
+      "simulate": "Beispiel zeigen",
+      "code": "Code zeigen",
+      "codeHide": "Code ausblenden"
+    },
+    "Memory": {
+      "title": "Schon anderswo übersetzt",
+      "take": "Übernehmen",
+      "thisModule": "dieses Modul",
+      "same": "{count} weitere Texte hier haben denselben englischen Text und noch keine Übersetzung.",
+      "sameOne": "1 weiterer Text hier hat denselben englischen Text und noch keine Übersetzung.",
+      "fill": "Dort auch übernehmen"
+    },
+    "Pick": {
+      "start": "Klicke auf einen Text von {module} in irgendeinem Fenster. Escape bricht ab.",
+      "none": "Dieser Text gehört nicht zu {module}. Wähle einen Text dieses Moduls, oder wähle oben sein Modul.",
+      "several": "{count} Texte haben diesen Wortlaut. Der erste ist gewählt, die anderen können dieselbe Übersetzung bekommen."
+    },
+    "Hint": {
+      "length": "{length} Zeichen, Englisch hat {recommended}",
+      "plural": "Dieser Text enthält eine Zahl. Formuliere ihn so, dass er für eine und für mehrere Dinge stimmt, oder wähle eine Form, die für jede Zahl passt."
+    },
+    "State": {
+      "live": "Live",
+      "map": "Live auf der Karte",
+      "open": "Zum Sehen öffnen",
+      "reload": "Nach Neuladen",
+      "liveHint": "Dieser Text ist gerade auf dem Bildschirm und ändert sich beim Tippen.",
+      "mapHint": "Das Modul zeichnet diesen Text auf die Karte. Dort ändert er sich beim Tippen, wo die Karte ihn zeigt.",
+      "openHint": "Gerade nicht auf dem Bildschirm. „Fenster öffnen“ sucht das Fenster, das ihn zeigt, und umrandet die Stelle.",
+      "settingHint": "Dieser Text steht in den Einstellungen von Foundry, im Reiter dieses Moduls. „Einstellungen öffnen“ zeigt die Stelle.",
+      "searching": "Suche das Fenster, das diesen Text zeigt...",
+      "inSettings": "Die Einstellungen des Moduls sind offen, die Stelle ist umrandet.",
+      "openedHidden": "Das Fenster ist offen, aber der Text steht in einem Teil, der gerade nicht zu sehen ist.",
+      "reloadHint": "Foundry liest diesen Text nur beim Start. Deine Fassung siehst du nach dem Neuladen der Seite.",
+      "shown": "An {count} Stellen auf dem Bildschirm umrandet.",
+      "shownOne": "An 1 Stelle auf dem Bildschirm umrandet.",
+      "notShown": "Dieser Text ist gerade nicht auf dem Bildschirm."
+    },
+    "Where": {
+      "notify": "Dieser Text ist eine Meldung oben am Bildschirm. Sie erscheint, wenn die Lage eintritt, dann mit deinem Text.",
+      "chat": "Dieser Text gehört zu einer Chatnachricht des Moduls. Neue Nachrichten zeigen deinen Text.",
+      "dialog": "Dieser Text steht in einer Rückfrage des Moduls. Sie erscheint, wenn du die zugehörige Aktion auslöst.",
+      "player": "Dieser Text steht in einem Fenster, das nur Spieler sehen. Melde dich als Spieler an, um ihn zu sehen.",
+      "window": "Dieser Text steht in einem Fenster, das das Modul nur in bestimmten Lagen öffnet, zum Beispiel nach einer Aktion.",
+      "unknown": "Kein Fenster zeigt diesen Text von selbst. Er erscheint, wenn das Modul ihn braucht, zum Beispiel nach einer Aktion.",
+      "gmSetting": "Dieser Text steht in einer Einstellung, die nur die Spielleitung sieht."
+    },
+    "Simulate": {
+      "notifyHint": "Dieser Text ist eine Meldung oben am Bildschirm. „Beispiel zeigen“ blendet sie mit deinem Text ein, Platzhalter mit Beispielwerten.",
+      "chatHint": "Dieser Text gehört zu einer Chatnachricht des Moduls. „Beispiel zeigen“ setzt eine solche Nachricht mit deinem Text in deinen Chat, nur bei dir und ohne sie zu speichern.",
+      "dialogHint": "Dieser Text steht in einer Rückfrage des Moduls. „Beispiel zeigen“ öffnet eine solche Rückfrage mit deinem Text.",
+      "shown": "Das Beispiel ist zu sehen, nur in deinem Browser.",
+      "failed": "Das Beispiel ließ sich nicht zeigen.",
+      "chatTitle": "Beispiel einer Chatnachricht"
+    },
+    "Samples": {
+      "opened": "Beispielfenster geöffnet: {name}. Die Daten sind ausgedacht, darin wird nichts gespeichert.",
+      "failed": "Das Beispielfenster ließ sich nicht öffnen.",
+      "shown": "Ein Beispielfenster mit ausgedachten Daten zeigt diesen Text, an {count} Stellen umrandet.",
+      "shownOne": "Ein Beispielfenster mit ausgedachten Daten zeigt diesen Text, an 1 Stelle umrandet.",
+      "chatHint": "Dieser Text gehört zu einer Chatnachricht. Fenster öffnen zeigt ihn in einem Beispielfenster des Moduls, mit ausgedachten Daten.",
+      "labelHint": "Dieser Text benennt ein Beispielfenster des Moduls. Du siehst ihn oben im Feld Beispielfenster.",
+      "opening": "Beispielfenster wird geöffnet: {name}..."
+    },
+    "Needs": {
+      "system": "das Spielsystem {name}",
+      "module": "das Modul {name}",
+      "and": " und ",
+      "short": "braucht {needs}",
+      "notice": "{module} braucht {needs}, und das hat diese Welt nicht. Seine Fenster gehen hier nicht auf, darum siehst du die Texte nicht an ihrem Platz und kannst keine Beispielfenster öffnen. Übersetzen und einreichen kannst du trotzdem jeden Text. Um die Texte zu sehen, öffne den Übersetzer in einer Welt, die das hat.",
+      "hint": "Dieses Modul zeigt in dieser Welt kein Fenster (es braucht {needs}). Code zeigen verrät, wo der Text benutzt wird.",
+      "elsewhere": "Nur in einer anderen Welt (den Übersetzer dort öffnen)"
+    },
+    "Code": {
+      "hint": "Hier benutzt das Modul den Text. Die markierte Zeile enthält den Schlüssel, die Zeilen darum zeigen, wofür er gebraucht wird.",
+      "none": "Der Schlüssel steht nicht ausgeschrieben im Code des Moduls, er wird aus Teilen zusammengesetzt."
+    },
+    "Check": {
+      "not-string": "Kein Text",
+      "too-long": "Text ist zu lang",
+      "placeholder-mismatch": "Platzhalter weichen vom Englischen ab",
+      "tag-mismatch": "HTML-Tags weichen vom Englischen ab",
+      "tag-attributes": "Attribute der HTML-Tags weichen vom Englischen ab",
+      "angle-brackets": "HTML ist hier nicht erlaubt",
+      "entity-mismatch": "HTML-Zeichencodes weichen vom Englischen ab",
+      "handlebars-mismatch": "Doppelte geschweifte Klammern weichen vom Englischen ab",
+      "enricher-mismatch": "Foundry-Verknüpfungen weichen vom Englischen ab",
+      "url-not-in-english": "Webadresse steht nicht im englischen Text",
+      "control-char": "Steuerzeichen",
+      "bidi-override": "Verstecktes Zeichen für die Schreibrichtung",
+      "zero-width-char": "Unsichtbares Zeichen",
+      "unknown-key": "Schlüssel steht nicht in der englischen Datei",
+      "not-object": "Keine Sprachdatei",
+      "empty": "Leer",
+      "identical-to-english": "Gleich wie im Englischen",
+      "length-long": "Viel länger als Englisch",
+      "length-short": "Viel kürzer als Englisch",
+      "edge-space": "Leerzeichen am Anfang oder Ende weicht vom Englischen ab",
+      "script-mismatch": "Die Schrift passt nicht zur Sprache",
+      "punctuation": "Semikolon oder Gedankenstrich gefunden",
+      "not-nfc": "Zeichen nicht in Standardform (NFC)"
+    },
+    "CheckDetail": {
+      "none": "keine",
+      "too-long": "Höchstens {max} Zeichen.",
+      "placeholder-mismatch": "Es fehlt: {missing}. Unbekannt: {extra}.",
+      "tag-mismatch": "Im Englischen: {english}. Bei dir: {translation}.",
+      "entity-mismatch": "Es fehlt: {missing}. Unbekannt: {extra}.",
+      "enricher-mismatch": "Es fehlt: {missing}. Unbekannt: {extra}.",
+      "url-not-in-english": "Gefunden: {found}.",
+      "punctuation": "Gefunden: {found}."
+    },
+    "Report": {
+      "preloaded": "Das Modul bringt diese Sprache schon mit. {count} Texte sind als Ausgangspunkt geladen.",
+      "preloadedOne": "Das Modul bringt diese Sprache schon mit. 1 Text ist als Ausgangspunkt geladen.",
+      "exported": "{count} Texte als {file} exportiert.",
+      "exportedOne": "1 Text als {file} exportiert.",
+      "skipped": "{count} Texte mit Fehlern wurden weggelassen:",
+      "skippedOne": "1 Text mit Fehlern wurde weggelassen:",
+      "imported": "Importierte Texte: {accepted}, abgelehnt: {rejected}.",
+      "unknown": "{count} Schlüssel gehören nicht zu diesem Modul und wurden ignoriert.",
+      "unknownOne": "1 Schlüssel gehört nicht zu diesem Modul und wurde ignoriert.",
+      "skippedOther": "{count} unbrauchbare Einträge wurden ignoriert.",
+      "skippedOtherOne": "1 unbrauchbarer Eintrag wurde ignoriert.",
+      "reject": {
+        "not-text": "Die Datei konnte nicht gelesen werden.",
+        "too-big": "Die Datei ist zu groß.",
+        "bad-json": "Die Datei ist kein gültiges JSON.",
+        "not-object": "Die Datei ist keine Sprachdatei.",
+        "other-module": "Diese Einreichungsdatei gehört zu einem anderen Modul.",
+        "not-review": "Das ist keine Prüfdatei.",
+        "other-language": "Diese Prüfung gehört zu einer anderen Sprache."
+      },
+      "reviewImported": "Prüfung von {reviewer} übernommen. Notizen: {count}, davon mit Änderungswunsch: {change}. Der Filter \"Prüfnotizen\" zeigt sie.",
+      "nothingLeft": "Gerade braucht kein Text dieses Moduls Arbeit.",
+      "allDone": "Alle Texte dieses Moduls sind übersetzt. Danke! „Einreichen...“ schickt sie uns.",
+      "filled": "Für {count} weitere Texte mit demselben englischen Text übernommen.",
+      "filledOne": "Für 1 weiteren Text mit demselben englischen Text übernommen."
+    },
+    "Submit": {
+      "title": "Übersetzung einreichen",
+      "intro": "Reiche deine Übersetzung auf Sephrals Discord-Server in {channel} oder als Issue auf GitHub ein. Das Modul sendet selbst nichts. Es speichert eine Datei und bereitet den Text deiner Nachricht vor, und du hängst die Datei dort an. Auf Discord kannst du gleich Fragen stellen.",
+      "links": "Direkt öffnen:",
+      "linkDiscord": "Sephrals Discord",
+      "linkGithub": "Issues des Moduls auf GitHub",
+      "summary": "{keys} Texte, {words} englische Wörter, {module} nach {lang}",
+      "summaryOne": "1 Text, {words} englische Wörter, {module} nach {lang}",
+      "nothing": "Es gibt noch keine fertige Übersetzung.",
+      "errors": "{count} Texte haben noch Fehler. Behebe sie zuerst.",
+      "errorsOne": "1 Text hat noch Fehler. Behebe ihn zuerst.",
+      "attest": "Ich habe jeden Text selbst von Hand übersetzt, oder zusammen mit Menschen, die das getan haben, und ich spreche die Sprache gut genug, um dafür geradezustehen. Es wurde keine Maschinenübersetzung und keine KI benutzt, auch nicht als Entwurf.",
+      "license": "Sephral darf meine Übersetzung mit den Modulen unter der Modullizenz veröffentlichen und anpassen. Ich bekomme dafür kein Geld. Mein Name steht nur dabei, wenn ich ihn angebe, und ich kann bitten, ihn zu entfernen. Ist die Übersetzung einmal veröffentlicht, kann sie nicht zurückgezogen werden, und ein Name in der Git-Historie bleibt dort stehen.",
+      "name": "Name für die Nennung",
+      "namePlaceholder": "Dein Name oder Spitzname",
+      "creditTitle": "Nennung in den Credits",
+      "creditNamed": "Nenne mich als",
+      "creditAnonymous": "Ich bleibe anonym, mein Name erscheint nirgends",
+      "missing": "Es fehlt noch: {list}.",
+      "missingParts": {
+        "attest": "das Häkchen „von Hand übersetzt“",
+        "license": "das Häkchen zur Lizenz",
+        "credit": "deine Wahl zur Nennung",
+        "name": "der Name für die Nennung"
+      },
+      "note": "Hinweis (optional)",
+      "privacy": "Die Datei enthält deine Texte und, wenn du sie angibst, deinen Namen und deinen Hinweis. Was du auf Discord oder GitHub postest, sehen dort auch andere. Um etwas zu ändern oder zurückzuziehen, schreib in den Kanal oder ins Issue.",
+      "cancel": "Abbrechen",
+      "close": "Schließen",
+      "field": {
+        "too-long": "{field} ist zu lang.",
+        "line-break": "{field} darf keinen Zeilenumbruch enthalten.",
+        "url": "{field} darf keine Webadresse enthalten."
+      },
+      "copy": "Text kopieren",
+      "unchanged": "Seit deiner letzten Einreichung hat sich nichts geändert.",
+      "history": "Deine Einreichungen",
+      "historyHint": "Nur in diesem Browser gespeichert. Um etwas zu ändern oder zurückzuziehen, schreib in den Discord-Kanal oder ins Issue.",
+      "entry": "{count} Texte, Modulversion {version}",
+      "entryOne": "1 Text, Modulversion {version}",
+      "save": "Als Datei speichern",
+      "viaDiscord": "Über Discord einreichen",
+      "viaGithub": "Über GitHub einreichen",
+      "message": "Text deiner Nachricht",
+      "copied": "Der Text ist kopiert, füge ihn mit Strg+V ein.",
+      "copyByHand": "Der Browser erlaubt das Kopieren nicht. Der Text ist markiert, kopiere ihn mit Strg+C.",
+      "via": {
+        "discord": "über Discord",
+        "github": "über GitHub"
+      },
+      "reopen": {
+        "discord": "Discord noch einmal öffnen",
+        "github": "Issue-Seite noch einmal öffnen"
+      },
+      "steps": {
+        "discordHead": "Fast fertig, drei Schritte auf Discord:",
+        "githubHead": "Fast fertig, zwei Schritte auf GitHub:",
+        "saved": "Die Datei wurde als {file} gespeichert (in deinen Downloads).",
+        "discordOpen": "Discord ist in einem neuen Tab offen. Tritt dem Server bei, falls du noch nicht drin bist. Beim ersten Mal bestätigst du in #start-here die Regeln mit ✅ und wählst in #pick-your-languages deine Sprache. Dann öffne {channel}.",
+        "discordPost": "Zieh {file} in den Kanal und füge den Text mit Strg+V ein. Er ist schon kopiert.",
+        "githubOpen": "Die Seite für ein neues Issue ist in einem neuen Tab offen, der Text steht schon drin.",
+        "githubAttach": "Zieh {file} in das Textfeld des Issues und klicke auf Create."
+      },
+      "msg": {
+        "head": "Übersetzung von {module} ({id} {version}) nach {lang}: {count} Texte.",
+        "headOne": "Übersetzung von {module} ({id} {version}) nach {lang}: 1 Text.",
+        "file": "Datei: {file}",
+        "name": "Name für die Nennung: {name}",
+        "note": "Hinweis: {note}",
+        "anonymous": "Nennung: anonym"
+      },
+      "rule": "Nur von Hand übersetzen: Maschinenübersetzung und KI sind nicht erlaubt, auch nicht für einen Entwurf (Regel von Foundry VTT zu KI-Inhalten).",
+      "openHint": "Kein Tab aufgegangen? Dann über diesen Link:"
+    },
+    "Use": {
+      "preview": "Nur solange dieses Fenster offen ist",
+      "me": "Immer, in meinem Foundry",
+      "world": "Für alle in dieser Welt",
+      "previewHint": "Deine Texte sind zu sehen, solange dieses Fenster offen ist. Beim Schließen zeigt das Modul wieder seine gewohnten Texte.",
+      "meHint": "Deine Übersetzung bleibt in diesem Browser, auch nach dem Neuladen. Nur du siehst sie. Texte mit Fehlern bleiben draußen.",
+      "worldHint": "Alle in dieser Welt sehen deine Übersetzung in jedem Fenster, das ab jetzt geöffnet wird, und überall nach dem Neuladen. Wer für dieses Modul eine feste Sprache gewählt hat, behält sie. Spätere Änderungen werden geteilt, wenn du das Fenster schließt.",
+      "worldByGM": "Die Spielleitung teilt diese Übersetzung mit allen in dieser Welt. Wähle \"Immer, in meinem Foundry\", um stattdessen deine eigene zu verwenden."
+    },
+    "Review": {
+      "title": "Übersetzung prüfen",
+      "rule": "Lies und urteile selbst: keine Maschinenübersetzung und keine KI, weder zum Prüfen noch zum Umschreiben.",
+      "hint": "Solange dieses Fenster offen ist, stehen die eingereichten Texte in den echten Fenstern des Moduls. Markiere jeden Text mit Passt oder Änderung nötig und schlag bei Bedarf eine bessere Formulierung vor. Nach „Passt“ geht es mit dem nächsten ungeprüften Text weiter.",
+      "head": "{module} {version} nach {lang}, übersetzt von {translator}, {count} Texte",
+      "headOne": "{module} {version} nach {lang}, übersetzt von {translator}, 1 Text",
+      "anonymous": "jemandem ohne Namensangabe",
+      "anonymousReviewer": "jemandem aus dem Prüfteam",
+      "filters": "Nach Status filtern",
+      "search": "Texte suchen",
+      "keys": "Texte der Einreichung",
+      "pick": "Wähle links einen Text, um ihn zu prüfen.",
+      "status": {
+        "all": "Alle",
+        "open": "Offen",
+        "ok": "Passt",
+        "change": "Änderung nötig"
+      },
+      "submitted": "Eingereichte Übersetzung",
+      "ok": "Passt",
+      "change": "Änderung nötig",
+      "suggestion": "Bessere Formulierung (optional)",
+      "comment": "Anmerkung für den Übersetzer (optional)",
+      "progress": "{done} von {total} Texten geprüft",
+      "reviewer": "Dein Name für die Nennung",
+      "copy": "Text für den Beitrag kopieren",
+      "save": "Prüfdatei speichern",
+      "copied": "Kopiert. Füge ihn im Beitrag dieser Übersetzung in #review-queue ein und häng die Prüfdatei an.",
+      "copyByHand": "Der Browser erlaubt das Kopieren nicht. Der Text ist unten markiert, kopiere ihn mit Strg+C.",
+      "saved": "Die Prüfdatei wurde als {file} gespeichert (in deinen Downloads). Häng sie an den Beitrag in #review-queue.",
+      "noModule": "Diese Einreichung gehört zu {module}, das in dieser Welt nicht aktiv ist. Schalte es ein und öffne die Datei noch einmal.",
+      "reject": {
+        "not-submission": "Das ist keine Einreichungsdatei von Sephrals Translator.",
+        "bad-language": "Die Einreichung nennt keine gültige Sprache.",
+        "no-texts": "Die Datei enthält keine Texte dieses Moduls."
+      },
+      "msg": {
+        "head": "{module} {version} ({lang}), geprüft von {reviewer}. Passt: {ok}, Änderung nötig: {change}, noch offen: {open}.",
+        "approved": "Freigegeben: alle Texte passen.",
+        "changes": "Bitte diese Texte ändern:",
+        "partial": "Noch nicht fertig. Bisher brauchen diese Texte eine Änderung:",
+        "more": "{count} weitere in der Prüfdatei.",
+        "moreOne": "1 weiterer Text in der Prüfdatei.",
+        "file": "Alle Notizen stehen in der angehängten Prüfdatei. Wer übersetzt hat, importiert sie mit Importieren."
+      }
+    }
+  }
+}
